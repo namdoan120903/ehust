@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/register_class.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
+import 'package:project/screens/student_home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +18,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: RegisterClass(),
+      initialRoute: '/', // Màn hình khởi đầu
+      routes: {
+        '/studenthome': (context) => StudentHome(),
+        '/profile': (context) => ProfileScreen(),
+        '/signin': (context)=> SignInScreen(),
+        '/signup': (context)=> SignUpScreen()
+      },
+      home: SignUpScreen(),
     );
   }
 }

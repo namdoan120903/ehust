@@ -74,7 +74,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       height: 20,
                     ),
                     TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/signin');
+                        },
                         child: Text(
                           "Login with account",
                           style: TextStyle(color: Colors.white),

@@ -94,7 +94,9 @@ class _SignInScreenState extends State<SignInScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      Navigator.pushNamed(context, '/studenthome');
+                    },
                     style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),
                         shape: RoundedRectangleBorder(
@@ -117,7 +119,9 @@ class _SignInScreenState extends State<SignInScreen> {
               ],
             ),
             TextButton(
-                onPressed: (){},
+                onPressed: (){
+                  Navigator.pop(context);
+                },
                 child: Text('Quên mật khẩu',
                 style: TextStyle(
                   color: Colors.white,
