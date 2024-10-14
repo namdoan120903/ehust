@@ -12,25 +12,16 @@ class _RollCallScreenState extends State<RollCallScreen> {
       DateFormat('dd/MM/yyyy').format(DateTime.now()); // Get the current date
 
   List<Map<String, dynamic>> students = [
-    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'status': 'Có'},
-    {'id': 'E190002', 'name': 'Nguyễn Thị Phương Anh', 'status': 'Vắng'},
-    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'status': 'Chậm'},
-    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'status': 'Có'},
-    {'id': 'E190002', 'name': 'Nguyễn Thị Phương Anh', 'status': 'Vắng'},
-    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'status': 'Chậm'},
-    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'status': 'Có'},
-    {'id': 'E190002', 'name': 'Nguyễn Thị Phương Anh', 'status': 'Vắng'},
-    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'status': 'Chậm'},
-    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'status': 'Có'},
-    {'id': 'E190002', 'name': 'Nguyễn Thị Phương Anh', 'status': 'Vắng'},
-    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'status': 'Chậm'},
-    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'status': 'Có'},
-    {'id': 'E190002', 'name': 'Nguyễn Thị Phương Anh', 'status': 'Vắng'},
-    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'status': 'Chậm'},
+    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'absentDays': 2, 'off': false},
+    {
+      'id': 'E190002',
+      'name': 'Nguyễn Thị Phương Anh',
+      'absentDays': 5,
+      'off': false
+    },
+    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'absentDays': 1, 'off': true},
     // Add more students here...
   ];
-
-  final List<String> attendanceOptions = ['Có', 'Vắng', 'Chậm'];
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +61,8 @@ class _RollCallScreenState extends State<RollCallScreen> {
                     columnWidths: {
                       0: FixedColumnWidth(100), // ID column
                       1: FlexColumnWidth(), // Name column
-                      2: FixedColumnWidth(100), // Present/Absent column
+                      2: FixedColumnWidth(120), // Absent Days column
+                      3: FixedColumnWidth(100), // Attendance off column
                     },
                     children: [
                       // Table headers
@@ -109,7 +101,20 @@ class _RollCallScreenState extends State<RollCallScreen> {
                             child: Center(
                               child: Padding(
                                 padding: EdgeInsets.all(8),
-                                child: Text("Trạng Thái",
+                                child: Text("Tổng số buổi vắng",
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            child: Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text("Vắng",
                                     textAlign: TextAlign.center,
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
@@ -150,20 +155,23 @@ class _RollCallScreenState extends State<RollCallScreen> {
                               child: Center(
                                 child: Padding(
                                   padding: EdgeInsets.all(8),
-                                  child: DropdownButton<String>(
-                                    value: student['status'],
-                                    isExpanded: true,
-                                    items: attendanceOptions
-                                        .map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Center(child: Text(value)),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
+                                  child: Text(student['absentDays'].toString(),
+                                      textAlign: TextAlign.center),
+                                ),
+                              ),
+                            ),
+                            TableCell(
+                              verticalAlignment:
+                                  TableCellVerticalAlignment.middle,
+                              child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: RadioListTile<bool>(
+                                    value: true,
+                                    groupValue: student['off'],
+                                    onChanged: (bool? newValue) {
                                       setState(() {
-                                        student['status'] = newValue!;
+                                        student['off'] = newValue!;
                                       });
                                     },
                                   ),

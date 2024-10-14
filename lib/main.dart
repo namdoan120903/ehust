@@ -5,6 +5,7 @@ import 'package:project/screens/sign_up_screen.dart';
 import 'package:project/screens/leave_request.dart';
 import 'package:project/screens/notification.dart';
 import 'package:project/screens/roll_call.dart';
+import 'package:project/screens/enter_point.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: RollCallScreen(),
+      home: LeaveRequestScreen(),
     );
   }
 }
