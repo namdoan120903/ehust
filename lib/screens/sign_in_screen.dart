@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:project/provider/AuthProvider.dart';
-import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -11,14 +9,8 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   bool _showPassword = false;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       backgroundColor: Colors.red[700],
       body: Center(
@@ -41,7 +33,6 @@ class _SignInScreenState extends State<SignInScreen> {
             SizedBox(height: 20,),
             TextField(
               style: TextStyle(color: Colors.white),
-              controller: _emailController,
               decoration: InputDecoration(
                 labelText: "Email hoặc mã số SV/CB",
                 labelStyle: TextStyle(color: Colors.white),
@@ -67,7 +58,6 @@ class _SignInScreenState extends State<SignInScreen> {
             TextField(
               style: TextStyle(color: Colors.white),
               obscureText: !_showPassword,
-              controller: _passwordController,
               decoration: InputDecoration(
                   labelText: "Mật Khẩu",
                   labelStyle: TextStyle(color: Colors.white),
@@ -79,12 +69,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide(
-                        color: Colors.white, width: 2),
+                        color: Colors.white, width: 2), // Set border color to white when focused
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide(
-                        color: Colors.white, width: 2),
+                        color: Colors.white, width: 2), // Set border color to white when disabled
                   ),
                   prefixIcon: Icon(Icons.lock, color: Colors.white,),
                   suffixIcon: IconButton(
@@ -100,21 +90,11 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
             SizedBox(height: 20,),
-            if (authProvider.errorMessage != null) ...[
-              Text(
-                authProvider.errorMessage!,
-                style: const TextStyle(color: Colors.red, fontSize: 16),
-              ),
-              const SizedBox(height: 10),
-            ],
-            if (authProvider.isLoaing)
-              const CircularProgressIndicator(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                     onPressed: (){
-                      authProvider.login(_emailController.text, _passwordController.text);
                       Navigator.pushNamed(context, '/studenthome');
                     },
                     style: ElevatedButton.styleFrom(

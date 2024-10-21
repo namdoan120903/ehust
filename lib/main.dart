@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:project/provider/AuthProvider.dart';
 import 'package:project/screens/profile_screen.dart';
+import 'package:project/screens/register_class.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
 import 'package:project/screens/student_home.dart';
-import 'package:provider/provider.dart';
-
+import 'package:project/screens/class_information.dart';
+import 'package:project/screens/class_list.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -15,21 +15,21 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) => MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_)=>AuthProvider()),
-
-    ],
-    child: MaterialApp(
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       initialRoute: '/', // Màn hình khởi đầu
       routes: {
         '/studenthome': (context) => StudentHome(),
         '/profile': (context) => ProfileScreen(),
         '/signin': (context)=> SignInScreen(),
-        '/signup': (context)=> SignUpScreen()
+        '/signup': (context)=> SignUpScreen(),
+        '/classinformation': (context)=> ClassInformation(),
+        '/classlist': (context)=> ClassList()
       },
-      home: SignUpScreen(),
-    ),
-  );
+      home: ClassInformation(),
+    );
+  }
 }
+
