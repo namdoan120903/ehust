@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/studenthome': (context) => StudentHome(),
         '/profile': (context) => ProfileScreen(),
         '/signin': (context)=> SignInScreen(),
-        '/signup': (context)=> SignUpScreen()
+        '/signup': (context)=> SignUpScreen(),
       },
       home: SignUpScreen(),
     ),

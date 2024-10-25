@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/appBar/bottomBar.dart';
-import 'package:project/screens/appBar/myAppBar.dart';
+import 'package:project/screens/myAppBar.dart';
 
 class StudentHome extends StatelessWidget {
   const StudentHome({super.key});
@@ -8,26 +7,31 @@ class StudentHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: MyAppBar(check: false,),
       body: Column(
         children: [
           //Header
           Padding(padding: EdgeInsets.only(left: 20, top: 40, bottom: 10),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.red,
-                radius: 30,
-              ),
-              SizedBox(width: 10,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Doan Van Nam | 20215430', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                  Text('Khoa hoc may tinh')
-                ],
-              )
-            ],
+          child: GestureDetector(
+            onTap: (){
+              Navigator.pushNamed(context, "/profile");
+            },
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.red,
+                  radius: 30,
+                ),
+                SizedBox(width: 10,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Doan Van Nam | 20215430', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    Text('Khoa hoc may tinh')
+                  ],
+                )
+              ],
+            ),
           ),
           ),
           Expanded(
@@ -47,7 +51,6 @@ class StudentHome extends StatelessWidget {
           )
         ],
       ),
-      bottomNavigationBar: MyBottomNavigationBar()
     );
   }
   Widget _buildMenuItem(IconData icon, String title, String subtitle) {

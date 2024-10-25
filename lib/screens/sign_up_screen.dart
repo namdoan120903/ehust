@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/AuthProvider.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -8,8 +11,15 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _showPassword = false;
+  final TextEditingController _surnameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String? selectRole;
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: Container(
           color: Colors.red[700],
@@ -41,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       children: [
                         Expanded(
                           child: _buildTextField(
-                            "Họ",
+                            "Họ", _surnameController
                           ),
                           flex: 4,
                         ),
@@ -49,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: 10,
                         ),
                         Expanded(
-                          child: _buildTextField("Tên"),
+                          child: _buildTextField("Tên", _nameController),
                           flex: 6,
                         )
                       ],
@@ -57,11 +67,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    _buildTextField("Email"),
+                    _buildTextField("Email", _emailController),
                     SizedBox(
                       height: 20,
                     ),
-                    _buildPasswordField("Password"),
+                    _buildPasswordField("Password", _passwordController ),
                     SizedBox(
                       height: 20,
                     ),
@@ -69,13 +79,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(
                       height: 30,
                     ),
-                    _buildSignUpButton(),
+                  ElevatedButton(
+                    onPressed: () {
+                      authProvider.signUp(context,_surnameController.text, _nameController.text ,_emailController.text, _passwordController.text, selectRole!);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                    child: Text(
+                      'SIGN UP',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red[700]),
+                    )),
                     SizedBox(
                       height: 20,
                     ),
                     TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/signin');
+                          Navigator.pushNamed(context, "/signin");
                         },
                         child: Text(
                           "Login with account",
@@ -90,8 +115,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
 
-  Widget _buildTextField(String text) {
+  Widget _buildTextField(String text, TextEditingController textedit) {
     return TextField(
+      controller: textedit,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: text,
@@ -115,8 +141,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildPasswordField(String text) {
+  Widget _buildPasswordField(String text, TextEditingController textedit) {
     return TextField(
+      controller: textedit,
       style: TextStyle(color: Colors.white),
       obscureText: !_showPassword,
       decoration: InputDecoration(
@@ -172,7 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               color: Colors.white), // Set border color to white when disabled
         ),
       ),
-      items: ['Student', 'Teacher', 'Admin'].map((String role) {
+      items: ['STUDENT', 'LECTURER'].map((String role) {
         return DropdownMenuItem(
           child: Text(
             role,
@@ -181,7 +208,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           value: role,
         );
       }).toList(),
-      onChanged: (String? value) {},
+      onChanged: (String? role) {
+        setState(() {
+          selectRole = role;
+          print(selectRole);
+        });
+      },
       hint: Text(
         'Role',
         style: TextStyle(color: Colors.white),
@@ -191,20 +223,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSignUpButton() {
-    return ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30)),
-        ),
-        child: Text(
-          'SIGN UP',
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.red[700]),
-        ));
-  }
 }

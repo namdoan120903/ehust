@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/appBar/bottomBar.dart';
-import 'package:project/screens/appBar/myAppBar.dart';
+import 'package:project/screens/myAppBar.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -9,7 +8,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: MyAppBar(check: true,),
       body: Padding(padding: EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -49,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // Handle logout
+                  Navigator.pushNamed(context, '/signin');
                 },
                 child: Text('Đăng xuất', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold
                 ),),
@@ -64,7 +63,6 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       ),
-      bottomNavigationBar: MyBottomNavigationBar(),
     );
   }
 }
