@@ -128,12 +128,6 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
             SizedBox(width: 20,),
-            if (authProvider.errorMessage != null) ...[
-              Text(
-                authProvider.errorMessage!,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ],
             if (authProvider.isLoading) const CircularProgressIndicator()
             ,SizedBox(width: 20,),
             Row(
@@ -169,12 +163,19 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
             TextButton(
                 onPressed: (){
-                  Navigator.pop(context);
                 },
                 child: Text('Quên mật khẩu',
                 style: TextStyle(
                   color: Colors.white,
-                ),))
+                ),)),
+            TextButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/signup');
+                },
+                child: Text('Đăng kí tài khoản',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),))
           ],
         ),
         ),

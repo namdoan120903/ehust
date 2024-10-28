@@ -10,12 +10,26 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+
+    final OutlineInputBorder whiteBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.0),
+      borderSide: const BorderSide(color: Colors.white, width: 2),
+    );
+
   bool _showPassword = false;
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? selectRole;
+  final _formKey = GlobalKey<FormState>();
+
+  String? validateNotEmpty(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return 'Vui lòng nhập $fieldName';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +41,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Center(
               child: SingleChildScrollView(
-                child: Column(
+                child:Form(
+                  key: _formKey,
+                  child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
@@ -79,9 +95,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(
                       height: 30,
                     ),
+                    if (authProvider.isLoading) const CircularProgressIndicator()
+                    ,SizedBox(width: 20,),
                   ElevatedButton(
                     onPressed: () {
-                      authProvider.signUp(context,_surnameController.text, _nameController.text ,_emailController.text, _passwordController.text, selectRole!);
+                      if (_formKey.currentState!.validate()) {
+                        authProvider.signUp(context,_surnameController.text, _nameController.text ,_emailController.text, _passwordController.text, selectRole!);
+                        print("Đăng ký thành công");
+                      }
+
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
@@ -108,7 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ))
                   ],
                 ),
-              ),
+              ),)
             ),
           )),
     );
@@ -116,54 +138,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
   Widget _buildTextField(String text, TextEditingController textedit) {
-    return TextField(
+    return TextFormField(
       controller: textedit,
+      validator: (value)=> validateNotEmpty(value, text),
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: text,
         labelStyle: TextStyle(color: Colors.white),
         filled: true,
         fillColor: Colors.white.withOpacity(0.3),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.white, width: 2)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-              color: Colors.white), // Set border color to white when focused
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-              color: Colors.white), // Set border color to white when disabled
-        ),
+        enabledBorder: whiteBorder,
+        focusedBorder: whiteBorder,
+        disabledBorder: whiteBorder,
+        errorBorder: whiteBorder, // Viền màu đỏ khi có lỗi
+        focusedErrorBorder: whiteBorder,
       ),
     );
   }
 
   Widget _buildPasswordField(String text, TextEditingController textedit) {
-    return TextField(
+    return TextFormField(
       controller: textedit,
       style: TextStyle(color: Colors.white),
+      validator: (value) => validateNotEmpty(value, text),
       obscureText: !_showPassword,
       decoration: InputDecoration(
         labelText: text,
         labelStyle: TextStyle(color: Colors.white),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.white, width: 2)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-              color: Colors.white), // Set border color to white when focused
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-              color: Colors.white), // Set border color to white when disabled
-        ),
+          enabledBorder: whiteBorder,
+          focusedBorder: whiteBorder,
+          disabledBorder: whiteBorder,
+          errorBorder: whiteBorder, // Viền màu đỏ khi có lỗi
+          focusedErrorBorder: whiteBorder,
         suffixIcon: IconButton(
             onPressed: (){
               setState(() {
@@ -181,23 +189,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildRoleField() {
     return DropdownButtonFormField<String>(
       style: TextStyle(color: Colors.white),
+      validator: (value)=> validateNotEmpty(value, "Role"),
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white.withOpacity(0.3),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.white, width: 2)
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-              color: Colors.white), // Set border color to white when focused
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-              color: Colors.white), // Set border color to white when disabled
-        ),
+        enabledBorder: whiteBorder,
+        focusedBorder: whiteBorder,
+        disabledBorder: whiteBorder,
+        errorBorder: whiteBorder, // Viền màu đỏ khi có lỗi
+        focusedErrorBorder: whiteBorder,
       ),
       items: ['STUDENT', 'LECTURER'].map((String role) {
         return DropdownMenuItem(

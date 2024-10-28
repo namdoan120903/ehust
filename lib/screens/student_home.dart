@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project/screens/myAppBar.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/AuthProvider.dart';
 
 class StudentHome extends StatelessWidget {
   const StudentHome({super.key});
@@ -7,7 +10,7 @@ class StudentHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(check: false,),
+      appBar: MyAppBar(check: false, title: "EHUST-STUDENT",),
       body: Column(
         children: [
           //Header
@@ -26,7 +29,7 @@ class StudentHome extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Doan Van Nam | 20215430', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    Text('Doan Van Nam | Student', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                     Text('Khoa hoc may tinh')
                   ],
                 )

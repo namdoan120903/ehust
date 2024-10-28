@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/AuthProvider.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool check;
-  const MyAppBar({super.key, required this.check});
+  final String title;
+  const MyAppBar({super.key, required this.check, required this.title});
   
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return AppBar(
       backgroundColor: Colors.red[700],
       title: GestureDetector(
         onTap:(){
-          Navigator.pushNamed(context, '/studenthome');
+          if(authProvider.user.role == "STUDENT") Navigator.pushNamed(context, '/student');
+          if(authProvider.user.role == "LECTURER") Navigator.pushNamed(context, '/lecturer');
         },
         child: Text(
-          'EHUST-S',
+          title,
           style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
         ),
       ) ,

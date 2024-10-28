@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:project/model/User.dart';
 import 'package:project/screens/myAppBar.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/AuthProvider.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -7,8 +11,11 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
-      appBar: MyAppBar(check: true,),
+      appBar: MyAppBar(check: true, title: "EHUST-STUDENT",),
       body: Padding(padding: EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -30,11 +37,11 @@ class ProfileScreen extends StatelessWidget {
           ),
           ListTile(
             title: Text('Email', textAlign: TextAlign.start),
-            subtitle: Text('doanvan@ehust.edu.vn', textAlign: TextAlign.start),
+            subtitle: Text('${authProvider.user.username}', textAlign: TextAlign.start),
           ),
           ListTile(
-            title: Text('Mã số sinh viên', textAlign: TextAlign.start),
-            subtitle: Text('20215430', textAlign: TextAlign.start)
+            title: Text('Chức vụ', textAlign: TextAlign.start),
+            subtitle: Text('${authProvider.user.role}', textAlign: TextAlign.start)
           ),
           ListTile(
             title: Text('Khoa/Viện', textAlign: TextAlign.start),
@@ -48,6 +55,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
+                  authProvider.user = User();
                   Navigator.pushNamed(context, '/signin');
                 },
                 child: Text('Đăng xuất', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold

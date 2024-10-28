@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:project/provider/AuthProvider.dart';
+import 'package:project/screens/lecturer_class.dart';
+import 'package:project/screens/lecturer_class_edit.dart';
+import 'package:project/screens/lecturer_create_class.dart';
+import 'package:project/screens/lecturer_home.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
@@ -24,12 +28,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/', // Màn hình khởi đầu
       routes: {
-        '/studenthome': (context) => StudentHome(),
+        '/student': (context) => StudentHome(),
+        '/lecturer': (context) => LecturerHome(),
+        '/lecturer/class': (context)=> LecturerClass(),
+        '/lecturer/class/create': (context)=> LecturerCreateClass(),
+        '/lecturer/class/edit': (context)=> LecturerEditClass(),
         '/profile': (context) => ProfileScreen(),
         '/signin': (context)=> SignInScreen(),
         '/signup': (context)=> SignUpScreen(),
       },
-      home: SignUpScreen(),
+      home: SignInScreen(),
     ),
   );
 }
