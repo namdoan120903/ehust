@@ -4,6 +4,11 @@ import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
 import 'package:project/screens/student_home.dart';
+import 'package:project/screens/student_home.dart';
+import 'package:project/screens/create_assigment_screen.dart';
+import 'package:project/screens/submit_assigment_screen1.dart';
+import 'package:project/screens/submit_assigment_screen2.dart';
+
 import 'package:provider/provider.dart';
 
 void main() {
@@ -29,7 +34,12 @@ class MyApp extends StatelessWidget {
         '/signin': (context)=> SignInScreen(),
         '/signup': (context)=> SignUpScreen(),
       },
+// -----------------------------------------------------------------------------
       home: SignUpScreen(),
+      // home: CreateAssignmentScreen(),
+      // home: SubmitAssignmentScreen1(),
+      // home: SubmitAssignmentScreen2(),
+// -----------------------------------------------------------------------------
     ),
   );
 }
