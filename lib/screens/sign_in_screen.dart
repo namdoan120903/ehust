@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/provider/AuthProvider.dart';
-import 'package:project/screens/student_home.dart';
+import 'package:project/screens/student/student_home.dart';
 import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -104,29 +104,6 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
             SizedBox(height: 20,),
-            if (authProvider.locked) TextField(
-              style: TextStyle(color: Colors.white),
-              controller: _codeController,
-              decoration: InputDecoration(
-                  labelText: "Mã xác thực",
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.2),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(color: Colors.white, width: 2)),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(
-                        color: Colors.white, width: 2),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(
-                        color: Colors.white, width: 2),
-                  ),
-              ),
-            ),
             SizedBox(width: 20,),
             if (authProvider.isLoading) const CircularProgressIndicator()
             ,SizedBox(width: 20,),
@@ -137,8 +114,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: (){
                       FocusScope.of(context).unfocus();
                       authProvider.login(context,_emailController.text, _passwordController.text);
-                      if(authProvider.haveCode != null){authProvider.verifyCode(context, _emailController.text, _codeController.text);
-                      }
                     },
                     style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),

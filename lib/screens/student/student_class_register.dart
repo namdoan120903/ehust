@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/myAppBar.dart';
 
-class LecturerClass extends StatefulWidget {
+import '../myAppBar.dart';
+
+class StudentClassRegister extends StatefulWidget {
+  const StudentClassRegister({super.key});
+
   @override
-  State<LecturerClass> createState() => _LecturerClassState();
+  State<StudentClassRegister> createState() => _StudentClassRegisterState();
 }
 
-class _LecturerClassState extends State<LecturerClass> {
+class _StudentClassRegisterState extends State<StudentClassRegister> {
   final List<Map<String, String>> classData = [
     {'id': '101', 'name': 'Lớp Toán', 'status': 'Đang hoạt động'},
     {'id': '102', 'name': 'Lớp Lý', 'status': 'Đã kết thúc'},
@@ -31,7 +34,7 @@ class _LecturerClassState extends State<LecturerClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
+      appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -39,7 +42,7 @@ class _LecturerClassState extends State<LecturerClass> {
           children: [
             Center(
               child: Text(
-                'Quản lí lớp học',
+                'Đăng kí lớp học',
                 style: TextStyle(
                   color: Colors.red,
                   fontSize: 25,
@@ -68,7 +71,7 @@ class _LecturerClassState extends State<LecturerClass> {
                     ),
                   ),
                   onPressed: () {},
-                  child: Text('Tìm kiếm'),
+                  child: Text('Thêm'),
                 ),
               ],
             ),
@@ -107,7 +110,7 @@ class _LecturerClassState extends State<LecturerClass> {
                       index, // Truyền index vào hàm
                     );
                   }).toList(),
-                  ),
+                ),
               ),
             ),
             SizedBox(height: 16),
@@ -121,9 +124,9 @@ class _LecturerClassState extends State<LecturerClass> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, "/lecturer/class/create");
+
                   },
-                  child: Text('Tạo lớp học'),
+                  child: Text('Gửi đăng kí'),
                 ),
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
@@ -132,9 +135,9 @@ class _LecturerClassState extends State<LecturerClass> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/lecturer/class/edit');
+
                   },
-                  child: Text('Chỉnh sửa'),
+                  child: Text('Xóa lớp'),
                 ),
               ],
             ),

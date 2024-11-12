@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/AuthProvider.dart';
+import '../../provider/AuthProvider.dart';
 
 class StudentHome extends StatelessWidget {
   const StudentHome({super.key});
@@ -43,12 +43,12 @@ class StudentHome extends StatelessWidget {
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               children: [
-                _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên'),
-                _buildMenuItem(Icons.add, 'Đăng kí', 'Đăng kí lớp học'),
-                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học'),
-                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học'),
-                _buildMenuItem(Icons.note, 'Nghỉ phép', 'Đơn xin nghỉ phép của sinh viên'),
-                _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học'),
+                _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên',context, '/student'),
+                _buildMenuItem(Icons.add, 'Đăng kí', 'Đăng kí lớp học', context, '/student/class/register'),
+                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, '/student/document'),
+                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, '/student'),
+                _buildMenuItem(Icons.note, 'Nghỉ phép', 'Đơn xin nghỉ phép của sinh viên', context, '/student'),
+                _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học', context, '/student'),
               ],
             ),
           )
@@ -56,13 +56,13 @@ class StudentHome extends StatelessWidget {
       ),
     );
   }
-  Widget _buildMenuItem(IconData icon, String title, String subtitle) {
+  Widget _buildMenuItem(IconData icon, String title, String subtitle, BuildContext context, String route) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       elevation: 5,
       child: InkWell(
         onTap: () {
-          // Handle menu item tap
+          Navigator.pushNamed(context, route);
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
