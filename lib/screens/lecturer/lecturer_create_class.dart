@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:project/provider/AuthProvider.dart';
+import 'package:project/provider/ClassProvider.dart';
 import 'package:project/screens/myAppBar.dart';
+import 'package:provider/provider.dart';
 
 class LecturerCreateClass extends StatefulWidget {
   @override
@@ -9,9 +12,7 @@ class LecturerCreateClass extends StatefulWidget {
 class _LecturerCreateClassState extends State<LecturerCreateClass> {
 
   final TextEditingController classCodeController = TextEditingController();
-  final TextEditingController additionalClassCodeController = TextEditingController();
   final TextEditingController classNameController = TextEditingController();
-  final TextEditingController courseCodeController = TextEditingController();
   final TextEditingController classTypeController = TextEditingController();
   final TextEditingController maxStudentsController = TextEditingController();
 
@@ -19,6 +20,7 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
   DateTime? endDate;
   @override
   Widget build(BuildContext context) {
+    final classProvider = Provider.of<ClassProvider>(context);
     return Scaffold(
 
       appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
@@ -43,11 +45,7 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
               SizedBox(height: 16),
               _buildTextField(classCodeController, 'Mã lớp'),
               SizedBox(height: 8),
-              _buildTextField(additionalClassCodeController, 'Mã lớp kèm'),
-              SizedBox(height: 8),
               _buildTextField(classNameController, 'Tên lớp'),
-              SizedBox(height: 8),
-              _buildTextField(courseCodeController, 'Mã học phần'),
               SizedBox(height: 8),
               _buildTextField(classTypeController, 'Loại lớp'),
               SizedBox(height: 8),
@@ -60,7 +58,7 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Thực hiện hành động khi nhấn nút
+                    classProvider.createClass(context, classCodeController.text, classNameController.text, classTypeController.text,startDate.toString().substring(0, 10),endDate.toString().substring(0,10), maxStudentsController.text);
                   },
                   style: ElevatedButton.styleFrom(
                     textStyle: TextStyle(fontSize: 20),

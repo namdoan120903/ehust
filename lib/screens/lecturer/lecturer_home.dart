@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'myAppBar.dart';
+import '../myAppBar.dart';
 
 class LecturerHome extends StatelessWidget {
   const LecturerHome({super.key});

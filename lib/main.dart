@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:project/provider/AuthProvider.dart';
-import 'package:project/screens/lecturer_class.dart';
-import 'package:project/screens/lecturer_class_edit.dart';
-import 'package:project/screens/lecturer_create_class.dart';
-import 'package:project/screens/lecturer_home.dart';
+import 'package:project/provider/ClassProvider.dart';
+import 'package:project/screens/lecturer/lecturer_class.dart';
+import 'package:project/screens/lecturer/lecturer_class_edit.dart';
+import 'package:project/screens/lecturer/lecturer_create_class.dart';
+import 'package:project/screens/lecturer/lecturer_home.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
-import 'package:project/screens/student_home.dart';
+import 'package:project/screens/student/student_class_register.dart';
+import 'package:project/screens/student/student_home.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -22,13 +24,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_)=>AuthProvider()),
-
+      ChangeNotifierProvider(create: (_)=>ClassProvider()),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/', // Màn hình khởi đầu
       routes: {
         '/student': (context) => StudentHome(),
+        '/student/class/register': (context) => StudentClassRegister(),
         '/lecturer': (context) => LecturerHome(),
         '/lecturer/class': (context)=> LecturerClass(),
         '/lecturer/class/create': (context)=> LecturerCreateClass(),

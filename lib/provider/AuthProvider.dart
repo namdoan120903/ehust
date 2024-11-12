@@ -1,12 +1,14 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/User.dart';
 
 class AuthProvider with ChangeNotifier{
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
   bool _isLoading = false;
   bool _locked=false;
   String? _haveCode ;
@@ -14,6 +16,7 @@ class AuthProvider with ChangeNotifier{
   String? _token;
   String? _role;
   User _user = User();
+  String? _verify_code="";
 
   User get user => _user;
   set user(User newUser) {
@@ -67,7 +70,8 @@ class AuthProvider with ChangeNotifier{
       if (response.statusCode == 200) {
         print(response.body);
         _isLogin = true;
-        _user = User.fromJson(jsonDecode(response.body));
+        _user = User.fromJson(jsonDecode(response.body)['data']);
+        _secureStorage.write(key: 'token', value: _user.token);
         print(_user);
         if(_user.role == "STUDENT"){
           Navigator.pushNamed(context, '/student');
@@ -78,7 +82,7 @@ class AuthProvider with ChangeNotifier{
 
       }else if(response.statusCode == 403){
         _locked = true;
-        checkCode(context, email, password);
+        verifyCode(context, email, password, _verify_code!);
         notifyListeners();
       }
       else {
@@ -113,6 +117,8 @@ class AuthProvider with ChangeNotifier{
       if (response.statusCode == 200) {
         print(response.body);
         Navigator.pushNamed(context, '/signin');
+        _verify_code = jsonDecode(response.body)['verify_code'];
+        print(_verify_code);
         notifyListeners();
       } else {
         _showErrorDialog(context, "Đăng kí thất bại, vui lòng thu lại");
@@ -125,57 +131,17 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> checkCode(BuildContext context,String email, String password) async {
+  Future<void> verifyCode(BuildContext context,String email,String password, String code) async {
     final Map<String, dynamic> requestBody = {
       "email": email,
-      "password": password,
+      "verify_code": code,
     };
     print("dksjdoaskdas $requestBody");
     _isLoading = true;
     notifyListeners();
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it4788/get_verify_code'), // Thay đổi URL cho API thực tế
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(requestBody),
-      );
-
-      if (response.statusCode == 200) {
-        print(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.body),
-            backgroundColor: Colors.green,
-          ),
-        );
-        RegExp regExp = RegExp(r'code sent: (\w+)');
-        Match? match = regExp.firstMatch(response.body);
-        _haveCode = match?.group(1);
-        notifyListeners();
-      } else {
-        // Xử lý nếu đăng ký thất bại
-        print("Đăng ký thất bại: ${response.body}");
-        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
-      }
-    } catch (e) {
-      print("Lỗi khi gửi request: $e");
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
-    }
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<void> verifyCode(BuildContext context,String email, String code) async {
-    final Map<String, dynamic> requestBody = {
-      "email": email,
-      "code": code,
-    };
-    print("dksjdoaskdas $requestBody");
-    _isLoading = true;
-    notifyListeners();
-    try {
-      final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it4788/verify_code'), // Thay đổi URL cho API thực tế
+        Uri.parse('http://160.30.168.228:8080/it4788/check_verify_code'), // Thay đổi URL cho API thực tế
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -183,9 +149,9 @@ class AuthProvider with ChangeNotifier{
       if (response.statusCode == 200) {
         print(response.body);
         _showErrorDialog(context, "Kích hoạt tài khoản thành công");
-        _haveCode = null;
         _locked = false;
         notifyListeners();
+        login(context, email, password);
       } else {
         // Xử lý nếu đăng ký thất bại
         print("Đăng ký thất bại: ${response.body}");
