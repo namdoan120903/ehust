@@ -12,6 +12,7 @@ import 'package:project/screens/lecturer/lecturer_class_edit.dart';
 import 'package:project/screens/lecturer/lecturer_create_class.dart';
 import 'package:project/screens/lecturer/lecturer_home.dart';
 import 'package:project/screens/profile_screen.dart';
+import 'package:project/screens/lecturer/roll_call.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
             '/profile': (context) => ProfileScreen(),
             '/signin': (context) => SignInScreen(),
             '/signup': (context) => SignUpScreen(),
-            '/notifications': (context) => NotificationsScreen()
+            '/notifications': (context) => NotificationsScreen(),
+            '/lecturer/take_attendance': (context) => RollCallScreen()
           },
           home: SignInScreen(),
         ),

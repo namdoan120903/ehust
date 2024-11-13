@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For formatting dates
 import 'package:project/components/custom_button.dart';
+import 'package:project/provider/RollCallProvider.dart';
+import 'package:provider/provider.dart'; // Import provider
 
 class RollCallScreen extends StatefulWidget {
   @override
@@ -10,21 +12,48 @@ class RollCallScreen extends StatefulWidget {
 class _RollCallScreenState extends State<RollCallScreen> {
   String currentDate =
       DateFormat('dd/MM/yyyy').format(DateTime.now()); // Get the current date
+  String classId = ''; // Default empty string
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Retrieve classId from the arguments passed through the route
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args != null && args is String) {
+      classId = args; // Assign the passed classId
+    } else {
+      classId = ''; // Default value if no classId is passed
+    }
+  }
+
+  // Initialize the students data with attendance status
   List<Map<String, dynamic>> students = [
-    {'id': 'E190001', 'name': 'Nguyễn Văn Anh', 'absentDays': 2, 'off': false},
+    {
+      'id': 'E190001',
+      'name': 'Nguyễn Văn Anh',
+      'absentDays': 2,
+      'attendanceStatus': 'NOT_ABSENCE'
+    },
     {
       'id': 'E190002',
       'name': 'Nguyễn Thị Phương Anh',
       'absentDays': 5,
-      'off': false
+      'attendanceStatus': 'NOT_ABSENCE'
     },
-    {'id': 'E190003', 'name': 'Lê Văn Hoàng', 'absentDays': 1, 'off': true},
+    {
+      'id': 'E190003',
+      'name': 'Lê Văn Hoàng',
+      'absentDays': 1,
+      'attendanceStatus': 'NOT_ABSENCE'
+    },
     // Add more students here...
   ];
 
   @override
   Widget build(BuildContext context) {
+    // Get the RollCallProvider
+    final rollCallProvider = Provider.of<RollCallProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -59,10 +88,10 @@ class _RollCallScreenState extends State<RollCallScreen> {
                   Table(
                     border: TableBorder.all(color: Colors.black),
                     columnWidths: {
-                      0: FixedColumnWidth(100), // ID column
-                      1: FlexColumnWidth(), // Name column
-                      2: FixedColumnWidth(120), // Absent Days column
-                      3: FixedColumnWidth(100), // Attendance off column
+                      0: FractionColumnWidth(0.2), // ID column
+                      1: FractionColumnWidth(0.5), // Name column
+                      2: FractionColumnWidth(0.15), // Absent Days column
+                      3: FractionColumnWidth(0.15), // Attendance off column
                     },
                     children: [
                       // Table headers
@@ -166,14 +195,27 @@ class _RollCallScreenState extends State<RollCallScreen> {
                               child: Center(
                                 child: Padding(
                                   padding: EdgeInsets.all(8),
-                                  child: RadioListTile<bool>(
-                                    value: true,
-                                    groupValue: student['off'],
-                                    onChanged: (bool? newValue) {
+                                  child: GestureDetector(
+                                    onTap: () {
                                       setState(() {
-                                        student['off'] = newValue!;
+                                        // Toggle attendance status
+                                        student['attendanceStatus'] =
+                                            student['attendanceStatus'] ==
+                                                    'ABSENCE'
+                                                ? 'NOT_ABSENCE'
+                                                : 'ABSENCE';
                                       });
                                     },
+                                    child: Icon(
+                                      student['attendanceStatus'] ==
+                                              'NOT_ABSENCE'
+                                          ? Icons.check_circle
+                                          : Icons.cancel,
+                                      color: student['attendanceStatus'] ==
+                                              'NOT_ABSENCE'
+                                          ? Colors.green
+                                          : Colors.red,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -189,7 +231,19 @@ class _RollCallScreenState extends State<RollCallScreen> {
             CustomButton(
               text: "Xác nhận",
               onPressed: () {
-                // Handle form submission
+                // Collect the absent student IDs
+                List<String> absentStudentIds = students
+                    .where((student) =>
+                        student['attendanceStatus'] ==
+                        'ABSENCE') // Filter for ABSENCE status
+                    .map((student) =>
+                        student['id'].toString()) // Extract the student IDs
+                    .toList();
+                print("absentStudentIds  " + absentStudentIds.toString());
+
+                // Call the API to take attendance
+                rollCallProvider.takeAttendance(
+                    classId, currentDate, absentStudentIds);
               },
               width: 0.3,
               height: 0.06,
