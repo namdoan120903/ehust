@@ -1,35 +1,43 @@
 import 'package:flutter/material.dart';
 
 class NotificationCard extends StatelessWidget {
-  final String subject;
-  final String date;
-  final String description;
+  final int id;
+  final String type;
+  final String sentTime;
+  final String message;
+  final String status;
+  final VoidCallback onRead; // Add a callback for marking as read
 
   const NotificationCard({
     super.key,
-    required this.subject,
-    required this.date,
-    required this.description,
+    required this.type,
+    required this.sentTime,
+    required this.message,
+    required this.id,
+    required this.status,
+    required this.onRead, // Add required parameter
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
+      color: status == 'UNREAD' ? Colors.yellow[100] : Colors.white,
       child: ListTile(
-        title:
-            Text(subject, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(type, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(description),
+            Text(message),
             const SizedBox(height: 8),
-            Text(date,
+            Text(sentTime,
                 style: const TextStyle(color: Colors.grey, fontSize: 12)),
           ],
         ),
         trailing: TextButton(
-          onPressed: () {},
+          onPressed: () {
+            if (status == 'UNREAD') onRead(); // Trigger callback when UNREAD
+          },
           child: Text('Chi tiết', style: TextStyle(color: Colors.red[700])),
         ),
       ),
