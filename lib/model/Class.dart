@@ -45,4 +45,12 @@ class Class {
     data['status'] = this.status;
     return data;
   }
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Class && other.classId == classId;
+  }
+
+  @override
+  int get hashCode => classId.hashCode;
 }

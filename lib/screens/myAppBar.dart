@@ -24,6 +24,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ) ,
       automaticallyImplyLeading: check,
+      iconTheme: IconThemeData(color: Colors.white),
       actions: [
         IconButton(
           icon: Icon(Icons.notifications, color: Colors.white,),
