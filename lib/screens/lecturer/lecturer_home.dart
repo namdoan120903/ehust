@@ -1,12 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/lecturer/lecturer_class_list.dart';
+import 'package:provider/provider.dart';
 
+import '../../provider/AuthProvider.dart';
+import '../../provider/ClassProvider.dart';
 import '../myAppBar.dart';
 
-class LecturerHome extends StatelessWidget {
+class LecturerHome extends StatefulWidget {
   const LecturerHome({super.key});
 
   @override
+  State<LecturerHome> createState() => _LecturerHomeState();
+}
+
+class _LecturerHomeState extends State<LecturerHome> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    // Lấy instance của ClassProvider mà không lắng nghe các thay đổi
+    final classProvider = Provider.of<ClassProvider>(context, listen: false);
+    classProvider.get_class_list(context);
+    print(classProvider.classes.toString());
+  }
+  @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: MyAppBar(check: false, title: "EHUST-LECTURER"),
       body: Column(
@@ -27,7 +47,7 @@ class LecturerHome extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Nguyen Tien Thanh | Lecturer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                      Text('${authProvider.user.ho} ${authProvider.user.ten} | Lecturer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       Text('Khoa hoc may tinh')
                     ],
                   )
@@ -41,12 +61,12 @@ class LecturerHome extends StatelessWidget {
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               children: [
-                _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên', context, "/lecturer"),
+                _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên', context, "class"),
                 _buildMenuItem(Icons.add, 'Tạo lớp học', 'Tạo lớp học mới', context, "/lecturer/class"),
-                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, "/lecturer"),
-                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, "/lecturer"),
-                _buildMenuItem(Icons.note, 'Nhập điểm', 'Giảng viên nhập điểm cho sinh viên', context, "/lecturer"),
-                _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học',context, "/lecturer"),
+                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, "document"),
+                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, "survey"),
+                _buildMenuItem(Icons.note, 'Nhập điểm', 'Giảng viên nhập điểm cho sinh viên', context, "score"),
+                _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học',context, "attendance"),
               ],
             ),
           )
@@ -54,13 +74,18 @@ class LecturerHome extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildMenuItem(IconData icon, String title, String subtitle, BuildContext context, String route) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       elevation: 5,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, route);
+          if(route == "/lecturer/class"){ Navigator.pushNamed(context, route);}
+          else{
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>LecturerClassList(route: route)));
+          }
+
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

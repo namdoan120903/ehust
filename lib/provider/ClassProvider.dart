@@ -33,6 +33,7 @@ class ClassProvider with ChangeNotifier {
   String? token;
   bool _isLoading = false;
   List<Class> classes = [];
+  List<Class> registerClass = [];
 
 
   Future<void> createClass(
@@ -86,7 +87,8 @@ class ClassProvider with ChangeNotifier {
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
-        Map<String, dynamic> jsonData = json.decode(response.body);
+        final responseBody = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonData = json.decode(responseBody);
 
         classes = (jsonData['data'] as List)
             .map((classJson) => Class.fromJson(classJson))
@@ -155,4 +157,71 @@ class ClassProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
+  Future<void> getClassInfoStudent(BuildContext context, String classId)async{
+    token = await secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "class_id": classId,
+    };
+    try {
+      final response = await http.post(
+        Uri.parse('http://160.30.168.228:8080/it5023e/get_basic_class_info'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        print(response.body);
+        final responseBody = utf8.decode(response.bodyBytes);
+        Class newRegisterClass = Class.fromJson(json.decode(responseBody)['data']);
+        if(registerClass.contains(newRegisterClass)){
+          _showErrorDialog(context, "da co lop nay roi");
+        }else{
+          registerClass.add(newRegisterClass);
+        }
+        notifyListeners();
+      }else if(response.statusCode == 400){
+        _showErrorDialog(context, "Khong ton tai lop nay");
+      } else {
+        _showErrorDialog(context, response.body.toString());
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }
+  }
+  void removeRegisterClass(BuildContext context, List<bool> isChecked){
+      for(int i =isChecked.length-1; i>=0; i--){
+        if(isChecked[i]){
+          registerClass.removeAt(i);
+        }
+      }
+      notifyListeners();
+  }
+  Future<void> registerStudentClass(BuildContext context)async{
+    token = await secureStorage.read(key: 'token');
+    final List<String?> classId = registerClass.map((item)=>item.classId).toList();
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "class_ids": classId
+    };
+    print(requestBody);
+    try {
+      final response = await http.post(
+        Uri.parse('http://160.30.168.228:8080/it5023e/register_class'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+          _showErrorDialog(context, "Dang ki lop thanh cong");
+          registerClass = [];
+        notifyListeners();
+      }
+      else {
+        _showErrorDialog(context, response.body.toString());
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }
+  }
+
+
 }

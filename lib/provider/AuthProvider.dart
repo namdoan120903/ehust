@@ -86,7 +86,7 @@ class AuthProvider with ChangeNotifier{
         notifyListeners();
       }
       else {
-        _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
+        _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
@@ -103,6 +103,8 @@ class AuthProvider with ChangeNotifier{
       "password": password,
       "role": role,
       "uuid": 11111,
+      "ho": surname,
+      "ten": name
     };
     print("dksjdoaskdas $requestBody");
     _isLoading = true;
@@ -136,7 +138,6 @@ class AuthProvider with ChangeNotifier{
       "email": email,
       "verify_code": code,
     };
-    print("dksjdoaskdas $requestBody");
     _isLoading = true;
     notifyListeners();
     try {
@@ -164,7 +165,31 @@ class AuthProvider with ChangeNotifier{
     _isLoading = false;
     notifyListeners();
   }
-
+  Future<void> changePassword(BuildContext context, String oldPass, String newPass)async{
+    String? token = await _secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "old_password": oldPass,
+      "new_password": newPass
+    };
+    print(requestBody);
+    try {
+      final response = await http.post(
+        Uri.parse('http://160.30.168.228:8080/it4788/change_password'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        _showErrorDialog(context, "Thay doi mat khau thanh cong");
+        notifyListeners();
+      }
+      else {
+        _showErrorDialog(context, response.body.toString());
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }
+  }
 }
 
 

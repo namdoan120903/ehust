@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../provider/ClassProvider.dart';
 import '../myAppBar.dart';
 
 class StudentClassRegister extends StatefulWidget {
@@ -10,28 +12,20 @@ class StudentClassRegister extends StatefulWidget {
 }
 
 class _StudentClassRegisterState extends State<StudentClassRegister> {
-  final List<Map<String, String>> classData = [
-    {'id': '101', 'name': 'Lớp Toán', 'status': 'Đang hoạt động'},
-    {'id': '102', 'name': 'Lớp Lý', 'status': 'Đã kết thúc'},
-    {'id': '103', 'name': 'Lớp Hóa', 'status': 'Đang hoạt động'},
-    {'id': '104', 'name': 'Lớp Sinh', 'status': 'Đang hoạt động'},
-    {'id': '105', 'name': 'Lớp Văn', 'status': 'Đã kết thúc'},
-    {'id': '106', 'name': 'Lớp Anh', 'status': 'Đang hoạt động'},
-    {'id': '107', 'name': 'Lớp Tin', 'status': 'Đang hoạt động'},
-    {'id': '108', 'name': 'Lớp GDCD', 'status': 'Đã kết thúc'},
-    {'id': '109', 'name': 'Lớp Địa', 'status': 'Đang hoạt động'},
-    {'id': '110', 'name': 'Lớp Thể Dục', 'status': 'Đang hoạt động'},
-  ];
-  late List<bool> isChecked;
 
-  @override
-  void initState() {
-    super.initState();
-    isChecked = List<bool>.filled(classData.length, false);
+  final TextEditingController searchController = TextEditingController();
+  late List<bool> isChecked;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final classProvider = Provider.of<ClassProvider>(context);
+    isChecked = List<bool>.filled(classProvider.registerClass.length, false);
+    print(isChecked);
   }
 
   @override
   Widget build(BuildContext context) {
+    final classProvider = Provider.of<ClassProvider>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
@@ -55,6 +49,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: searchController,
                     decoration: InputDecoration(
                       labelText: 'Mã lớp',
                       border: OutlineInputBorder(
@@ -70,7 +65,9 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    classProvider.getClassInfoStudent(context, searchController.text);
+                  },
                   child: Text('Thêm'),
                 ),
               ],
@@ -100,14 +97,15 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: ListView(
-                  children: classData.asMap().entries.map((entry) {
+                  children: classProvider.registerClass.asMap().entries.map((entry) {
                     int index = entry.key; // Lấy index
                     var classInfo = entry.value; // Lấy thông tin lớp học
                     return _buildClassRow(
-                      classInfo['id']!,
-                      classInfo['name']!,
-                      classInfo['status']!,
-                      index, // Truyền index vào hàm
+                      classInfo.classId!,
+                      classInfo.className!,
+                      classInfo.classType!,
+                      index,
+                      isChecked// Truyền index vào hàm
                     );
                   }).toList(),
                 ),
@@ -124,7 +122,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                     ),
                   ),
                   onPressed: () {
-
+                    classProvider.registerStudentClass(context);
                   },
                   child: Text('Gửi đăng kí'),
                 ),
@@ -135,7 +133,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                     ),
                   ),
                   onPressed: () {
-
+                    classProvider.removeRegisterClass(context, isChecked);
                   },
                   child: Text('Xóa lớp'),
                 ),
@@ -147,7 +145,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
     );
   }
 
-  Widget _buildClassRow(String classId, String className, String status, int index) {
+  Widget _buildClassRow(String classId, String className, String status, int index, List<bool> isChecked) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: Container(
@@ -160,13 +158,14 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
             Container(width: 100, child: Center(child: Text(className))),
             Container(width: 100, child: Center(child: Text(status))),
             Container(width: 50, child: Center(child: Checkbox(
-              value: isChecked[index],
-              onChanged: (value) {
-                setState(() {
-                  isChecked[index] = value!;
-                });
-              },
-            ),)),
+                value: isChecked[index] ,
+                onChanged: (bool? value) {
+                  print(value);
+                  setState(() {
+                      isChecked[index] = value!;
+                      print(isChecked[index]);
+                  });
+                }),)),
           ],
         ),
       ),
