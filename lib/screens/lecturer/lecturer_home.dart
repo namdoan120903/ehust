@@ -63,7 +63,7 @@ class _LecturerHomeState extends State<LecturerHome> {
               children: [
                 _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên', context, "class"),
                 _buildMenuItem(Icons.add, 'Tạo lớp học', 'Tạo lớp học mới', context, "/lecturer/class"),
-                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, "document"),
+                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, "material"),
                 _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, "survey"),
                 _buildMenuItem(Icons.note, 'Nhập điểm', 'Giảng viên nhập điểm cho sinh viên', context, "score"),
                 _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học',context, "attendance"),

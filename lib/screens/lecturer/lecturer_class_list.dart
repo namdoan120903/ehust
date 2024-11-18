@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/lecturer/lecturer_material.dart';
 import 'package:project/screens/lecturer/lecturer_survey.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,9 @@ class LecturerClassList extends StatelessWidget {
                       onTap: () {
                         if(route == "survey"){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LecturerSurvey(classA: classItem)));
+                        }
+                        if(route == "material"){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LecturerMaterial(classA: classItem)));
                         }
                       },
                     ),

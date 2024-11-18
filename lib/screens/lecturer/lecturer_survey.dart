@@ -69,8 +69,20 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
+                    onTap: (){
+
+                    },
                     title: Text('${assignment.title!} - ${assignment.classId}'),
-                    subtitle: Text(assignment.description!),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 4), // Khoảng cách giữa các dòng
+                        Text(
+                          'Hạn nộp bài: ${assignment.deadline}', // Văn bản bổ sung
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

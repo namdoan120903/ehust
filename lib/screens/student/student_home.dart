@@ -64,7 +64,7 @@ class _StudentHomeState extends State<StudentHome> {
                 _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên',context, 'class'),
                 _buildMenuItem(Icons.add, 'Đăng kí', 'Đăng kí lớp học', context, '/student/class/register'),
                 _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, 'document'),
-                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, 'survey'),
+                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, '/student/survey'),
                 _buildMenuItem(Icons.note, 'Nghỉ phép', 'Đơn xin nghỉ phép của sinh viên', context, 'takeleave'),
                 _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học', context, 'attendance'),
               ],
@@ -81,7 +81,8 @@ class _StudentHomeState extends State<StudentHome> {
       elevation: 5,
       child: InkWell(
         onTap: () {
-          if(route == "/student/class/register"){ Navigator.pushNamed(context, route);}
+          if(route == "/student/class/register"){ Navigator.pushNamed(context, route);};
+          if(route == "/student/survey"){ Navigator.pushNamed(context, route);}
           else{
             Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentClass(route: route)));
           }

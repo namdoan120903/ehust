@@ -12,6 +12,7 @@ class SurveyProvider with ChangeNotifier {
   String? token;
   List<Survey> surveys=[];
   bool isLoading = false;
+  List<Survey> studentSurvey = [];
 
   Future<void> create_survey(BuildContext context, File uploadFile,
       String classId, String title, String date, String des) async {
@@ -154,7 +155,76 @@ class SurveyProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }}
 
+  Future<void> submit_survey(BuildContext context, File uploadFile,
+      String surveyId, String des) async {
+    token = await secureStorage.read(key: 'token');
+    try{
+      var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/submit_survey"));
 
+      // Thêm các trường văn bản (text)
+      request.fields['token'] = token!;
+      request.fields['assignmentId'] = surveyId ;
+      request.fields['textResponse'] = des;
+
+      // Thêm tệp vào request mà không cần chỉ định contentType
+      var file = await http.MultipartFile.fromPath(
+        'file', // Tên trường file trong form
+        uploadFile.path, // Đường dẫn đến tệp
+      );
+      request.files.add(file);
+      // Kiểm tra các trường và file đã thêm
+      print("Fields: ${request.fields}");
+      print("Files: ${request.files.map((f) => f.filename)}");
+      // Thêm header nếu cần
+      request.headers['Content-Type'] = 'multipart/form-data';
+
+      isLoading = true;
+      notifyListeners();
+      var response = await request.send();
+      var responseBody = await http.Response.fromStream(response);
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+        _showErrorDialog(context, "Nộp bài thành công");
+        //surveys.add(Survey.fromJson(responseBody.body));
+        notifyListeners();
+      } else {
+        print(responseBody.body);
+      }
+    } catch (e) {
+      print(e.toString());
+      _showErrorDialog(context, e.toString());
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> get_survey_student(BuildContext context)async {
+    token = await secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+    };
+    try {
+      print("start http request");
+      final response = await http.post(
+        Uri.parse('http://160.30.168.228:8080/it5023e/get_student_assignments'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonData = json.decode(responseBody);
+        studentSurvey = (jsonData['data'] as List)
+            .map((classJson) => Survey.fromJson(classJson))
+            .toList();
+        print(studentSurvey.length);
+        notifyListeners();
+      } else {
+        _showErrorDialog(context, response.body);
+      }
+    } catch (e) {
+      _showErrorDialog(context, e.toString());
+    }
+  }
 
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(

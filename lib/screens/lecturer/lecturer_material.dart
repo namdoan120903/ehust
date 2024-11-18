@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:project/provider/MaterialProvider.dart';
+import 'package:project/screens/lecturer/create_material.dart';
+import 'package:provider/provider.dart';
+
+import '../../model/Class.dart';
+import '../myAppBar.dart';
+
+class LecturerMaterial extends StatefulWidget {
+  final Class classA;
+  LecturerMaterial({required this.classA});
+
+  @override
+  State<LecturerMaterial> createState() => _LecturerMaterialState();
+}
+
+class _LecturerMaterialState extends State<LecturerMaterial> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Lấy instance của ClassProvider mà không lắng nghe các thay đổi
+    final materialProvider = Provider.of<MaterialProvider>(context, listen: false);
+    materialProvider.getAllMaterial(context, widget.classA.classId!);
+    print(materialProvider.materials.toString());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final materialProvider = Provider.of<MaterialProvider>(context);
+    return Scaffold(
+      appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
+      body:
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Center(
+              child: Text(
+                '${widget.classA.classId} - ${widget.classA.className} - ${widget.classA.classType} ',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  'Danh sách Tài liệu',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateMaterial(classId: widget.classA.classId,)));
+                  },
+                  tooltip: 'Thêm bài tập mới',
+                  color: Colors.red,
+                ),
+              ],
+            ),Expanded(child:
+            ListView.builder(
+              itemCount: materialProvider.materials.length,
+              itemBuilder: (context, index) {
+                final material = materialProvider.materials[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: ListTile(
+                    onTap: (){
+
+                    },
+                    title: Text('${material.materialName!} - ${material.classId}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 4), // Khoảng cách giữa các dòng
+                        Text(
+                          'Mô tả: ${material.description}', // Văn bản bổ sung
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+
+                            }
+                        ),
+                        IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              print(material.id);
+                            }
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),)
+          ],
+        ),
+      ),
+    );
+  }
+}

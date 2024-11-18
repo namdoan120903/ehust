@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/provider/AuthProvider.dart';
 import 'package:project/provider/ClassProvider.dart';
+import 'package:project/provider/MaterialProvider.dart';
 import 'package:project/provider/SurveyProvider.dart';
 import 'package:project/screens/lecturer/lecturer_class.dart';
 import 'package:project/screens/lecturer/lecturer_class_edit.dart';
@@ -12,6 +13,7 @@ import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/screens/sign_up_screen.dart';
 import 'package:project/screens/student/student_class_register.dart';
 import 'package:project/screens/student/student_home.dart';
+import 'package:project/screens/student/student_survey.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -28,6 +30,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_)=>AuthProvider()),
       ChangeNotifierProvider(create: (_)=>ClassProvider()),
       ChangeNotifierProvider(create: (_)=>SurveyProvider()),
+      ChangeNotifierProvider(create: (_)=>MaterialProvider()),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -39,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/lecturer/class': (context)=> LecturerClass(),
         '/lecturer/class/create': (context)=> LecturerCreateClass(),
         '/lecturer/class/edit': (context)=> LecturerEditClass(),
+        '/student/survey': (context)=> StudentSurvey(),
         '/lecturer/class_list': (context)=> LecturerClassList(route: "",),
         '/profile': (context) => ProfileScreen(),
         '/signin': (context)=> SignInScreen(),
