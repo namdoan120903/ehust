@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:project/components/custom_button.dart';
 import 'package:project/components/custom_text_field.dart';
-import 'package:intl/intl.dart'; // For formatting the date
-import 'package:image_picker/image_picker.dart'; // For picking images
+import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart'; // For picking files
 import 'dart:io'; // For working with files
+import 'package:intl/intl.dart'; // For formatting the date
+import 'package:project/provider/LeaveRequestProvider.dart';
 
 class LeaveRequestScreen extends StatefulWidget {
   const LeaveRequestScreen({super.key});
@@ -13,10 +15,11 @@ class LeaveRequestScreen extends StatefulWidget {
 }
 
 class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
-  DateTime? selectedDate;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  File? _pickedImage; // To store the picked image
-  bool _isUploadSuccessful = false; // Track upload status
+  DateTime? selectedDate;
+  File? _pickedFile; // To store the picked file
+  final _titleController = TextEditingController();
+  final _reasonController = TextEditingController();
 
   // Function to show the date picker
   Future<void> _selectDate(BuildContext context) async {
@@ -33,16 +36,64 @@ class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
     }
   }
 
-  // Function to pick an image from the gallery
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
+  // Function to pick a file
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.single.path != null) {
       setState(() {
-        _pickedImage = File(image.path);
-        _isUploadSuccessful = true; // Simulate upload success after selection
+        _pickedFile = File(result.files.single.path!);
       });
+    }
+  }
+
+  // Function to validate the form
+  bool _validateForm() {
+    if (_titleController.text.isEmpty ||
+        _reasonController.text.isEmpty ||
+        selectedDate == null ||
+        _pickedFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Vui lòng điền đầy đủ thông tin."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  // Function to submit the leave request
+  Future<void> _submitRequest(BuildContext context) async {
+    if (!_validateForm()) return;
+
+    final provider = Provider.of<LeaveRequestProvider>(context, listen: false);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate!);
+
+    try {
+      await provider.requestLeave(
+        classId:
+            _titleController.text, // Replace with dynamic classId if needed
+        date: formattedDate,
+        reason: _reasonController.text,
+        filePath: _pickedFile!.path,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Đã gửi yêu cầu nghỉ phép thành công."),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.of(context).pop(); // Go back after successful submission
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Gửi yêu cầu thất bại: $error"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -66,29 +117,37 @@ class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const CustomTextField(label: "Tiêu đề"),
+            CustomTextField(
+              label: "Tiêu đề",
+              controller: _titleController,
+            ),
             const SizedBox(height: 20),
-            const CustomTextField(label: "Lý do", isMultiline: true),
+            CustomTextField(
+              label: "Lý do",
+              isMultiline: true,
+              controller: _reasonController,
+            ),
             const SizedBox(height: 10),
             Text(
               "Và",
               style: TextStyle(
-                  color: Colors.red[700],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700),
+                color: Colors.red[700],
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 10),
             CustomButton(
               text: "Tải minh chứng",
-              onPressed: _pickImage, // Handle file upload
+              onPressed: _pickFile, // Handle file upload
             ),
             const SizedBox(height: 10),
 
-            // Show success message if image upload is successful
-            if (_isUploadSuccessful)
-              const Text(
-                "Tải minh chứng thành công",
-                style: TextStyle(color: Colors.green),
+            // Show the file name if a file is picked
+            if (_pickedFile != null)
+              Text(
+                "Đã chọn file: ${_pickedFile!.path.split('/').last}",
+                style: const TextStyle(color: Colors.green),
               ),
 
             const SizedBox(height: 10),
@@ -121,9 +180,7 @@ class _LeaveRequestScreenState extends State<LeaveRequestScreen> {
             const SizedBox(height: 20),
             CustomButton(
               text: "Submit",
-              onPressed: () {
-                // Handle form submission
-              },
+              onPressed: () => _submitRequest(context),
               width: 0.3,
               height: 0.06,
               borderRadius: 5,
