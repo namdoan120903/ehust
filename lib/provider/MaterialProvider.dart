@@ -43,12 +43,14 @@ class MaterialProvider with ChangeNotifier {
       isLoading = true;
       notifyListeners();
       var response = await request.send();
+      print('send request');
       var responseBody = await http.Response.fromStream(response);
-      if (response.statusCode == 200) {
-        materials.add(MyMaterial.fromJson(jsonDecode(responseBody.body)['data']));
-        notifyListeners();
+      print(responseBody.body);
+      if (response.statusCode == 201) {
+        MyMaterial material1 = MyMaterial.fromJson(jsonDecode(responseBody.body)['data']);
+        materials.add(material1);
         _showErrorDialog(context, "Them tai lieu thanh cong");
-        Navigator.pop(context);
+        notifyListeners();
       } else {
         print(responseBody.body);
       }
@@ -86,6 +88,77 @@ class MaterialProvider with ChangeNotifier {
         _showErrorDialog(context, responseBody.body);
       }
     } catch (e) {
+      _showErrorDialog(context, e.toString());
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> deleteMaterial(BuildContext context, int materialId, int index)async{
+    token = await secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "material_id": materialId
+    };
+    print(requestBody);
+    try {
+      final response = await http.post(
+        Uri.parse('http://160.30.168.228:8080/it5023e/delete_material'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        materials.removeAt(index);
+        print("xoa thanh cong");
+        notifyListeners();
+      } else {
+        _showErrorDialog(context, response.body);
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }}
+
+  Future<void> edit_material(BuildContext context, File uploadFile,
+      String materialId, String title, String des, int index) async {
+    print(title);
+    token = await secureStorage.read(key: 'token');
+    try{
+      var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/edit_material"));
+
+      // Thêm các trường văn bản (text)
+      request.fields['token'] = token!;
+      request.fields['materialId'] = materialId;
+      request.fields['title'] = title;
+      request.fields['materialType'] = "PDF";
+      request.fields['description'] = des;
+
+      // Thêm tệp vào request mà không cần chỉ định contentType
+      var file = await http.MultipartFile.fromPath(
+        'file', // Tên trường file trong form
+        uploadFile.path, // Đường dẫn đến tệp
+      );
+      request.files.add(file);
+      // Kiểm tra các trường và file đã thêm
+      print("Fields: ${request.fields}");
+      print("Files: ${request.files.map((f) => f.filename)}");
+      // Thêm header nếu cần
+      request.headers['Content-Type'] = 'multipart/form-data';
+
+      isLoading = true;
+      notifyListeners();
+      var response = await request.send();
+      var responseBody = await http.Response.fromStream(response);
+      if (response.statusCode == 200) {
+        MyMaterial material1 = MyMaterial.fromJson(jsonDecode(responseBody.body)['data']);
+        materials[index] = material1;
+        print(material1.materialName);
+        _showErrorDialog(context, "Chỉnh sửa thành công");
+        notifyListeners();
+      } else {
+        print(responseBody.body);
+      }
+    } catch (e) {
+      print(e.toString());
       _showErrorDialog(context, e.toString());
     }
     isLoading = false;

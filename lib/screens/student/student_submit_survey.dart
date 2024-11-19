@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:project/model/Survey.dart';
 import 'package:provider/provider.dart';
 
+import '../../DocumentVIewer.dart';
 import '../../provider/SurveyProvider.dart';
 import '../myAppBar.dart';
 
@@ -31,9 +32,6 @@ class _StudentSubmitSurveyState extends State<StudentSubmitSurvey> {
     } else {
       print("Chưa chọn tệp");
     }
-  }
-
-  void _openLink(String url) async {
   }
 
 
@@ -73,8 +71,14 @@ class _StudentSubmitSurveyState extends State<StudentSubmitSurvey> {
               // Link Google Drive ở đây
               TextButton(
                 onPressed: () {
-                  print(widget.survey.fileUrl);
-                  _openLink(widget.survey.fileUrl!);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GoogleDriveViewer(
+                          driveUrl: widget.survey.fileUrl!
+                      ),
+                    ),
+                  );
                 },
                 child: Text(
                   'Mở tài liệu hướng dẫn',
@@ -118,7 +122,7 @@ class _StudentSubmitSurveyState extends State<StudentSubmitSurvey> {
               OutlinedButton(
                 onPressed: (){
                   print(widget.survey);
-                  surveyProvider.submit_survey(context, _file!, widget.survey.id.toString(), descriptionController.text);
+                  surveyProvider.submit_survey(context, _file!, widget.survey.id.toString(), descriptionController.text, widget.survey.classId!);
                 },
                 child: Text('Nộp bài'),
                 style: OutlinedButton.styleFrom(

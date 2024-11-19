@@ -156,7 +156,7 @@ class SurveyProvider with ChangeNotifier {
     }}
 
   Future<void> submit_survey(BuildContext context, File uploadFile,
-      String surveyId, String des) async {
+      String surveyId, String des, String classId) async {
     token = await secureStorage.read(key: 'token');
     try{
       var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/submit_survey"));
@@ -185,7 +185,7 @@ class SurveyProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         Navigator.pop(context);
         _showErrorDialog(context, "Nộp bài thành công");
-        //surveys.add(Survey.fromJson(responseBody.body));
+        getAllSurvey(context, classId);
         notifyListeners();
       } else {
         print(responseBody.body);

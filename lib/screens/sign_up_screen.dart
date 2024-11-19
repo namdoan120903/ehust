@@ -101,7 +101,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         authProvider.signUp(context,_surnameController.text, _nameController.text ,_emailController.text, _passwordController.text, selectRole!);
-                        print("Đăng ký thành công");
                       }
 
                     },

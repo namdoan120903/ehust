@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:project/provider/MaterialProvider.dart';
 import 'package:project/screens/lecturer/create_material.dart';
+import 'package:project/screens/lecturer/edit_material.dart';
 import 'package:provider/provider.dart';
 
+import '../../DocumentVIewer.dart';
 import '../../model/Class.dart';
 import '../myAppBar.dart';
 
@@ -70,15 +72,27 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     onTap: (){
-
+                      print(material.materialLink);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GoogleDriveViewer(
+                            driveUrl: material.materialLink!
+                          ),
+                        ),
+                      );
                     },
-                    title: Text('${material.materialName!} - ${material.classId}'),
+                    title: Text('${material.materialName!}'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 4), // Khoảng cách giữa các dòng
+                        SizedBox(height: 4),
                         Text(
                           'Mô tả: ${material.description}', // Văn bản bổ sung
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Text(
+                          'File: ${material.materialType}', // Văn bản bổ sung
                           style: TextStyle(color: Colors.grey),
                         ),
                       ],
@@ -89,13 +103,13 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
                         IconButton(
                             icon: Icon(Icons.edit),
                             onPressed: () {
-
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>EditMaterial(material: material, index: index,)));
                             }
                         ),
                         IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () {
-                              print(material.id);
+                              materialProvider.deleteMaterial(context, material.id!, index);
                             }
                         ),
                       ],

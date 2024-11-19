@@ -70,7 +70,6 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     onTap: (){
-
                     },
                     title: Text('${assignment.title!} - ${assignment.classId}'),
                     subtitle: Column(

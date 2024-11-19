@@ -17,6 +17,7 @@ class AuthProvider with ChangeNotifier{
   String? _role;
   User _user = User();
   String? _verify_code="";
+  String? fileId;
 
   User get user => _user;
   set user(User newUser) {
@@ -66,12 +67,15 @@ class AuthProvider with ChangeNotifier{
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
-
+      String code = jsonDecode(response.body)['code'].toString();
       if (response.statusCode == 200) {
         print(response.body);
         _isLogin = true;
-        _user = User.fromJson(jsonDecode(response.body)['data']);
+        final responseBody = utf8.decode(response.bodyBytes);
+        _user = User.fromJson(jsonDecode(responseBody)['data']);
         _secureStorage.write(key: 'token', value: _user.token);
+        String url = _user.avatar!;
+        fileId = url.substring(url.indexOf('d/') + 2, url.indexOf('/view'));
         print(_user);
         if(_user.role == "STUDENT"){
           Navigator.pushNamed(context, '/student');
@@ -79,17 +83,26 @@ class AuthProvider with ChangeNotifier{
         if(_user.role == "LECTURER"){
           Navigator.pushNamed(context, '/lecturer');
         }
+        _showSuccessSnackbar(context, "Đăng nhâp thành công", Colors.green);
 
-      }else if(response.statusCode == 403){
+      }
+      else if(response.statusCode == 403){
         _locked = true;
         verifyCode(context, email, password, _verify_code!);
         notifyListeners();
+      }
+      else if(code == "1011"){
+        _showSuccessSnackbar(context, "Email không đúng định dạng @hust.edu.vn", Colors.red);
+      }else if(code == "1016"){
+        _showSuccessSnackbar(context, "Không tồn tại tài khoản này, vui lòng thử lại", Colors.red);
+      }else if(code == "1017"){
+        _showSuccessSnackbar(context, "Mật khẩu sai, vui lòng thử lại", Colors.red);
       }
       else {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      _showErrorDialog(context, e.toString());
     }
 
     _isLoading = false;
@@ -115,15 +128,22 @@ class AuthProvider with ChangeNotifier{
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
-
+      String code = jsonDecode(response.body)['code'].toString();
       if (response.statusCode == 200) {
         print(response.body);
         Navigator.pushNamed(context, '/signin');
         _verify_code = jsonDecode(response.body)['verify_code'];
         print(_verify_code);
+        _showSuccessSnackbar(context, "Đăng kí thành công", Colors.green);
         notifyListeners();
-      } else {
-        _showErrorDialog(context, "Đăng kí thất bại, vui lòng thu lại");
+      }else if(code == "1011"){
+        _showSuccessSnackbar(context, "Email không đúng định dạng @hust.edu.vn", Colors.red);
+      } else if(code == "9996"){
+        _showSuccessSnackbar(context, "Tài khoản đã tồn tại với email này", Colors.red);
+      } else if(code == "1015"){
+        _showSuccessSnackbar(context, "Mật khẩu không nên chứa các kí tự đặc biệt", Colors.red);
+      }else {
+        _showErrorDialog(context, response.body);
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
@@ -173,14 +193,45 @@ class AuthProvider with ChangeNotifier{
       "new_password": newPass
     };
     print(requestBody);
+
     try {
       final response = await http.post(
         Uri.parse('http://160.30.168.228:8080/it4788/change_password'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
+      String code = jsonDecode(response.body)['code'].toString();
       if (response.statusCode == 200) {
-        _showErrorDialog(context, "Thay doi mat khau thanh cong");
+        Navigator.pop(context);
+        _showSuccessSnackbar(context, "Thay đổi mật khẩu thanh công", Colors.green);
+        notifyListeners();
+      }else if(code == "1018"){
+        _showSuccessSnackbar(context, "Mật khẩu mới liên quan đến mật khẩu cũ, vui lòng đặt lại", Colors.red);
+      }
+      else {
+        _showErrorDialog(context, response.body.toString());
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }
+  }
+
+  Future<void> logout(BuildContext context)async{
+    String? token = await _secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+    };
+    try {
+      final response = await http.post(
+        Uri.parse('http://160.30.168.228:8080/it4788/logout'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        _user = User();
+        _secureStorage.delete(key: 'token');
+        Navigator.pushNamed(context, '/signin');
+        _showSuccessSnackbar(context, "Đăng xuất thành công", Colors.green);
         notifyListeners();
       }
       else {
@@ -190,6 +241,19 @@ class AuthProvider with ChangeNotifier{
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
+
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
 }
 
 

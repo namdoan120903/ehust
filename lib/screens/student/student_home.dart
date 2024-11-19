@@ -39,7 +39,15 @@ class _StudentHomeState extends State<StudentHome> {
             },
             child: Row(
               children: [
-                CircleAvatar(
+                authProvider.user.avatar!=null&&authProvider.user.avatar!=""
+                    ?ClipOval(
+                  child: Image.network(
+                    'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
+                    width: 65,
+                    height: 65,
+                    fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
+                  ),
+                ):CircleAvatar(
                   backgroundColor: Colors.red,
                   radius: 30,
                 ),
@@ -47,10 +55,10 @@ class _StudentHomeState extends State<StudentHome> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${authProvider.user.ho} ${authProvider.user.ten} | Student', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                    Text('Khoa hoc may tinh')
+                    Text('${authProvider.user.ho} ${authProvider.user.ten}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    Text('Student')
                   ],
-                )
+                ),
               ],
             ),
           ),
