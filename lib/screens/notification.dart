@@ -24,21 +24,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    if (readNotificationIds.isNotEmpty) {
-      Provider.of<NotificationProvider>(context, listen: false)
-          .markAsRead(readNotificationIds);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
+            if (readNotificationIds.isNotEmpty) {
+              // Log the action
+              print("Marking notifications as read: $readNotificationIds");
+              // We use context here only after confirming the widget is still mounted
+              Provider.of<NotificationProvider>(context, listen: false)
+                  .markAsRead(readNotificationIds);
+            } else {
+              print(
+                  "readNotificationIds is empty. No notifications to mark as read.");
+            }
             Navigator.of(context).pop();
           },
         ),
@@ -67,7 +68,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 return NotificationCard(
                   id: notification["id"] ?? 0,
                   type: notification["type"].toString() ?? "No type",
-                  sentTime: notification["sentTime"] ?? "No date",
+                  sent_time: notification["sent_time"] ?? "No date",
                   message: notification["message"] ?? "No message",
                   status: notification["status"].toString(),
                   onRead: () {

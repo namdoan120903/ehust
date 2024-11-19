@@ -9,6 +9,7 @@ import 'package:project/screens/lecturer/lecturer_class_edit.dart';
 import 'package:project/screens/lecturer/lecturer_class_list.dart';
 import 'package:project/screens/lecturer/lecturer_create_class.dart';
 import 'package:project/screens/lecturer/lecturer_home.dart';
+import 'package:project/screens/lecturer/send_notification.dart';
 import 'package:project/screens/notification.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
@@ -43,6 +44,8 @@ class MyApp extends StatelessWidget {
             '/student/class/register': (context) => StudentClassRegister(),
             '/student/leave_request': (context) => LeaveRequestScreen(),
             '/lecturer': (context) => LecturerHome(),
+            'lecturer/send_notification': (context) =>
+                SendNotificationScreen(userName: "Nguyen Tan"),
             '/lecturer/class': (context) => LecturerClass(),
             '/lecturer/class/create': (context) => LecturerCreateClass(),
             '/lecturer/class/edit': (context) => LecturerEditClass(),

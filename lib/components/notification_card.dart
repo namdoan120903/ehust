@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class NotificationCard extends StatelessWidget {
   final int id;
   final String type;
-  final String sentTime;
+  final String sent_time;
   final String message;
   final String status;
   final VoidCallback onRead; // Add a callback for marking as read
@@ -11,7 +11,7 @@ class NotificationCard extends StatelessWidget {
   const NotificationCard({
     super.key,
     required this.type,
-    required this.sentTime,
+    required this.sent_time,
     required this.message,
     required this.id,
     required this.status,
@@ -30,7 +30,7 @@ class NotificationCard extends StatelessWidget {
           children: [
             Text(message),
             const SizedBox(height: 8),
-            Text(sentTime,
+            Text(sent_time,
                 style: const TextStyle(color: Colors.grey, fontSize: 12)),
           ],
         ),
