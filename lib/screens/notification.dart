@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:project/provider/AuthProvider.dart';
+import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import '../provider/NotificationProvider.dart';
@@ -15,55 +16,76 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   List<int> readNotificationIds = []; // Track IDs of read notifications
+  final ScrollController _scrollController = ScrollController();
+  int _currentIndex = 0;
+  final int _count = 10;
+  bool _isFetchingMore = false;
 
   @override
   void initState() {
     super.initState();
     final provider = Provider.of<NotificationProvider>(context, listen: false);
-    provider.fetchNotifications();
+    provider.fetchNotifications(index: _currentIndex, count: _count);
+
+    // Attach scroll listener
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isFetchingMore) {
+      _fetchMoreNotifications();
+    }
+  }
+
+  void _fetchMoreNotifications() async {
+    _isFetchingMore = true;
+    _currentIndex += _count;
+    final provider = Provider.of<NotificationProvider>(context, listen: false);
+    await provider.fetchNotifications(index: _currentIndex, count: _count);
+    _isFetchingMore = false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            if (readNotificationIds.isNotEmpty) {
-              // Log the action
-              print("Marking notifications as read: $readNotificationIds");
-              // We use context here only after confirming the widget is still mounted
-              Provider.of<NotificationProvider>(context, listen: false)
-                  .markAsRead(readNotificationIds);
-            } else {
-              print(
-                  "readNotificationIds is empty. No notifications to mark as read.");
-            }
-            Navigator.of(context).pop();
-          },
-        ),
-        flexibleSpace: const Center(
-          child: Text("Thông báo",
-              style: TextStyle(color: Colors.white, fontSize: 20)),
-        ),
-        backgroundColor: Colors.red[700],
+      appBar: MyAppBar(
+        check: false,
+        title: "EHUST-STUDENT",
       ),
       body: SafeArea(
         child: Consumer<NotificationProvider>(
           builder: (context, provider, child) {
-            if (provider.isLoading) {
+            if (provider.isLoading && _currentIndex == 0) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (provider.notifications.isEmpty) {
+            if (provider.notifications.isEmpty && _currentIndex == 0) {
               return const Center(child: Text("Không có thông báo nào"));
             }
 
             return ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(20),
-              itemCount: provider.notifications.length,
+              itemCount: provider.notifications.length + 1,
               itemBuilder: (context, index) {
+                if (index == provider.notifications.length) {
+                  // Show loading indicator at the bottom
+                  return provider.isLoading
+                      ? const Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : const SizedBox.shrink();
+                }
+
                 final notification = provider.notifications[index];
                 return NotificationCard(
                   id: notification["id"] ?? 0,

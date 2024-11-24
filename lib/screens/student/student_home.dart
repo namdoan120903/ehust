@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/components/attend_class_list.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:project/screens/student/student_class.dart';
 import 'package:provider/provider.dart';
@@ -101,31 +102,61 @@ class _StudentHomeState extends State<StudentHome> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       elevation: 5,
       child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, route);
-          //   if (route == "/student/class/register") {
-          //     Navigator.pushNamed(context, route);
-          //   } else {
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => StudentClass(route: route)));
-          //   }
+        onTap: () async {
+          if (route == "/student/class/register") {
+            // Navigate to class registration screen
+            Navigator.pushNamed(context, route);
+          } else if (route == "attendance") {
+            // Handle "Điểm danh" button tap
+            final classProvider =
+                Provider.of<ClassProvider>(context, listen: false);
+            await classProvider.get_class_list(context);
+
+            if (classProvider.classes.isNotEmpty) {
+              // Extract class IDs and ensure they are non-null
+              final classIds = classProvider.classes
+                  .map((c) =>
+                      c.classId) // This is likely returning List<String?>
+                  .whereType<String>() // Filters out null values
+                  .toList();
+
+              debugPrint("classIds: " + classIds.toString());
+
+              // Navigate to AttendanceClassList screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AttendanceClassList(
+                    classIds: classIds, // This will now be a List<String>
+                    userRole: 'STUDENT', // Set role dynamically as needed
+                  ),
+                ),
+              );
+            }
+          } else {
+            // Navigate to other screens
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StudentClass(route: route),
+              ),
+            );
+          }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 50, color: Colors.red),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         ),

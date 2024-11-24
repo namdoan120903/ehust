@@ -7,9 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:project/model/Class.dart';
 import 'package:provider/provider.dart';
 
-
 class ClassProvider with ChangeNotifier {
-
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -35,7 +33,6 @@ class ClassProvider with ChangeNotifier {
   List<Class> classes = [];
   List<Class> registerClass = [];
 
-
   Future<void> createClass(
       BuildContext context,
       String classCode,
@@ -54,6 +51,7 @@ class ClassProvider with ChangeNotifier {
       "end_date": end,
       "max_student_amount": amount
     };
+    print("START CREATE CLASS!");
     print(requestBody);
     try {
       final response = await http.post(
@@ -75,7 +73,7 @@ class ClassProvider with ChangeNotifier {
     }
   }
 
-  Future<void> get_class_list(BuildContext context)async{
+  Future<void> get_class_list(BuildContext context) async {
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -89,11 +87,12 @@ class ClassProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes);
         Map<String, dynamic> jsonData = json.decode(responseBody);
-
+        debugPrint(responseBody.toString());
         classes = (jsonData['data'] as List)
             .map((classJson) => Class.fromJson(classJson))
             .toList();
         print("lay du lieu thanh cong");
+        debugPrint(classes.toString());
         notifyListeners();
       } else {
         _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
@@ -101,10 +100,10 @@ class ClassProvider with ChangeNotifier {
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
-
   }
 
-  Future<void> updateClass(BuildContext context,int selectedId, String id, String name, String status, String start, String end)async{
+  Future<void> updateClass(BuildContext context, int selectedId, String id,
+      String name, String status, String start, String end) async {
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -122,7 +121,8 @@ class ClassProvider with ChangeNotifier {
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
-        classes[selectedId] = Class.fromJson(json.decode(response.body)['data']);
+        classes[selectedId] =
+            Class.fromJson(json.decode(response.body)['data']);
         _showErrorDialog(context, "Cap nhat lớp học thành công");
         print("lay du lieu thanh cong");
         notifyListeners();
@@ -134,7 +134,8 @@ class ClassProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteClass(BuildContext context, String classId, int index)async{
+  Future<void> deleteClass(
+      BuildContext context, String classId, int index) async {
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -157,7 +158,8 @@ class ClassProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
-  Future<void> getClassInfoStudent(BuildContext context, String classId)async{
+
+  Future<void> getClassInfoStudent(BuildContext context, String classId) async {
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -172,14 +174,15 @@ class ClassProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         print(response.body);
         final responseBody = utf8.decode(response.bodyBytes);
-        Class newRegisterClass = Class.fromJson(json.decode(responseBody)['data']);
-        if(registerClass.contains(newRegisterClass)){
+        Class newRegisterClass =
+            Class.fromJson(json.decode(responseBody)['data']);
+        if (registerClass.contains(newRegisterClass)) {
           _showErrorDialog(context, "da co lop nay roi");
-        }else{
+        } else {
           registerClass.add(newRegisterClass);
         }
         notifyListeners();
-      }else if(response.statusCode == 400){
+      } else if (response.statusCode == 400) {
         _showErrorDialog(context, "Khong ton tai lop nay");
       } else {
         _showErrorDialog(context, response.body.toString());
@@ -188,17 +191,20 @@ class ClassProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
-  void removeRegisterClass(BuildContext context, List<bool> isChecked){
-      for(int i =isChecked.length-1; i>=0; i--){
-        if(isChecked[i]){
-          registerClass.removeAt(i);
-        }
+
+  void removeRegisterClass(BuildContext context, List<bool> isChecked) {
+    for (int i = isChecked.length - 1; i >= 0; i--) {
+      if (isChecked[i]) {
+        registerClass.removeAt(i);
       }
-      notifyListeners();
+    }
+    notifyListeners();
   }
-  Future<void> registerStudentClass(BuildContext context)async{
+
+  Future<void> registerStudentClass(BuildContext context) async {
     token = await secureStorage.read(key: 'token');
-    final List<String?> classId = registerClass.map((item)=>item.classId).toList();
+    final List<String?> classId =
+        registerClass.map((item) => item.classId).toList();
     final Map<String, dynamic> requestBody = {
       "token": token,
       "class_ids": classId
@@ -211,17 +217,14 @@ class ClassProvider with ChangeNotifier {
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
-          _showErrorDialog(context, "Dang ki lop thanh cong");
-          registerClass = [];
+        _showErrorDialog(context, "Dang ki lop thanh cong");
+        registerClass = [];
         notifyListeners();
-      }
-      else {
+      } else {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
-
-
 }

@@ -9,6 +9,7 @@ import 'package:project/screens/lecturer/lecturer_class_edit.dart';
 import 'package:project/screens/lecturer/lecturer_class_list.dart';
 import 'package:project/screens/lecturer/lecturer_create_class.dart';
 import 'package:project/screens/lecturer/lecturer_home.dart';
+import 'package:project/screens/lecturer/roll_call.dart';
 import 'package:project/screens/lecturer/send_notification.dart';
 import 'package:project/screens/notification.dart';
 import 'package:project/screens/profile_screen.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
             '/lecturer/class': (context) => LecturerClass(),
             '/lecturer/class/create': (context) => LecturerCreateClass(),
             '/lecturer/class/edit': (context) => LecturerEditClass(),
+            '/lecturer/class/take_attendance': (context) => RollCallScreen(),
             '/lecturer/class_list': (context) => LecturerClassList(
                   route: "",
                 ),

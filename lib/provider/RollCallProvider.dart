@@ -15,6 +15,7 @@ class RollCallProvider with ChangeNotifier {
   String? get attendanceStatus => _attendanceStatus;
 
   // 1. Take Attendance (take_attendance API)
+  //lecturer take attendance
   Future<void> takeAttendance(
       String classId, String date, List<String> absentStudentIds) async {
     _isLoading = true;
@@ -29,7 +30,7 @@ class RollCallProvider with ChangeNotifier {
     print(requestBody);
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it4788/take_attendance'),
+        Uri.parse('http://160.30.168.228:8080/it5023e/take_attendance'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -50,20 +51,24 @@ class RollCallProvider with ChangeNotifier {
   }
 
   // 2. Get Attendance Record (get_attendance_record API)
-  //student get all absense date
+  //student get all absense date by class
   //response: private List<LocalDate> absentDates
   Future<void> getAttendanceRecord(String classId) async {
     _isLoading = true;
     notifyListeners();
     token = await secureStorage.read(key: 'token');
-
+    print("START Get Attendance Record");
+    print("body: " +
+        json.encode({"token": token, "class_id": classId}).toString());
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it4788/get_attendance_record'),
+        Uri.parse('http://160.30.168.228:8080/it5023e/get_attendance_record'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({"token": token, "class_id": classId}),
       );
 
+      print("response.statusCode " + response.statusCode.toString());
+      print("response.body " + response.body.toString());
       if (response.statusCode == 200) {
         _attendanceList = List<Map<String, dynamic>>.from(
           json.decode(response.body)['attendance_list'],
@@ -73,6 +78,7 @@ class RollCallProvider with ChangeNotifier {
       }
     } catch (e) {
       _attendanceList = [];
+      print(e.toString());
     }
 
     _isLoading = false;
@@ -80,13 +86,14 @@ class RollCallProvider with ChangeNotifier {
   }
 
   // 3. Set Attendance Status (set_attendance_status API)
+  //lecturer re set attendance status of a student (attendance_id)
   Future<void> setAttendanceStatus(String attendanceId, bool status) async {
     _isLoading = true;
     notifyListeners();
     token = await secureStorage.read(key: 'token');
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it4788/set_attendance_status'),
+        Uri.parse('http://160.30.168.228:8080/it5023e/set_attendance_status'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "token": token,
@@ -109,18 +116,24 @@ class RollCallProvider with ChangeNotifier {
   }
 
   // 4. Get Attendance List (get_attendance_list API)
-  Future<void> getAttendanceList(String classId, String date) async {
+  //lecturer get a list attendance of a date - a class
+  Future<void> getAttendanceList(
+      String classId, String date, int page, int pageSize) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it4788/get_attendance_list'),
+        Uri.parse('http://160.30.168.228:8080/it5023e/get_attendance_list'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
-          "token": token,
+          "token": token, // Ensure 'token' is defined in your class
           "class_id": classId,
           "date": date,
+          "pageable_request": {
+            "page": page.toString(),
+            "page_size": pageSize.toString()
+          }
         }),
       );
 

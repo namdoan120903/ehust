@@ -31,19 +31,16 @@ class _RollCallScreenState extends State<RollCallScreen> {
     {
       'id': 'E190001',
       'name': 'Nguyễn Văn Anh',
-      'absentDays': 2,
       'attendanceStatus': 'NOT_ABSENCE'
     },
     {
       'id': 'E190002',
       'name': 'Nguyễn Thị Phương Anh',
-      'absentDays': 5,
       'attendanceStatus': 'NOT_ABSENCE'
     },
     {
       'id': 'E190003',
       'name': 'Lê Văn Hoàng',
-      'absentDays': 1,
       'attendanceStatus': 'NOT_ABSENCE'
     },
     // Add more students here...
@@ -88,10 +85,9 @@ class _RollCallScreenState extends State<RollCallScreen> {
                   Table(
                     border: TableBorder.all(color: Colors.black),
                     columnWidths: {
-                      0: FractionColumnWidth(0.2), // ID column
+                      0: FractionColumnWidth(0.3), // ID column
                       1: FractionColumnWidth(0.5), // Name column
-                      2: FractionColumnWidth(0.15), // Absent Days column
-                      3: FractionColumnWidth(0.15), // Attendance off column
+                      3: FractionColumnWidth(0.2), // Attendance off column
                     },
                     children: [
                       // Table headers
@@ -118,19 +114,6 @@ class _RollCallScreenState extends State<RollCallScreen> {
                               child: Padding(
                                 padding: EdgeInsets.all(8),
                                 child: Text("Họ và Tên",
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text("Tổng số buổi vắng",
                                     textAlign: TextAlign.center,
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
@@ -174,17 +157,6 @@ class _RollCallScreenState extends State<RollCallScreen> {
                                 child: Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Text(student['name'],
-                                      textAlign: TextAlign.center),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(student['absentDays'].toString(),
                                       textAlign: TextAlign.center),
                                 ),
                               ),
