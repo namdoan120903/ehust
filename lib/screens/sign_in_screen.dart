@@ -138,13 +138,6 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
             TextButton(
                 onPressed: (){
-                },
-                child: Text('Quên mật khẩu',
-                style: TextStyle(
-                  color: Colors.white,
-                ),)),
-            TextButton(
-                onPressed: (){
                   Navigator.pushNamed(context, '/signup');
                 },
                 child: Text('Đăng kí tài khoản',

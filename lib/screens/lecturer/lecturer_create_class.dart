@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:project/provider/AuthProvider.dart';
 import 'package:project/provider/ClassProvider.dart';
@@ -16,6 +18,9 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
   final TextEditingController classTypeController = TextEditingController();
   final TextEditingController maxStudentsController = TextEditingController();
 
+  String selectedClassType = 'LT'; // Giá trị mặc định
+  List<String> items = ['LT', 'BT', 'LT_BT'];
+
   DateTime? startDate;
   DateTime? endDate;
   @override
@@ -30,7 +35,7 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
 
          child: Center(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
                 child: Text(
@@ -47,7 +52,11 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
               SizedBox(height: 8),
               _buildTextField(classNameController, 'Tên lớp'),
               SizedBox(height: 8),
-              _buildTextField(classTypeController, 'Loại lớp'),
+              _buildDropdown(selectedClassType, items, (newValue) {
+                setState(() {
+                  selectedClassType = newValue!;
+                });
+              }, 'Loại lớp'),
               SizedBox(height: 8),
               _buildDatePicker(context, 'Ngày bắt đầu', true),
               SizedBox(height: 8),
@@ -55,16 +64,29 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
               SizedBox(height: 8),
               _buildTextField(maxStudentsController, 'Sinh viên tối đa'),
               SizedBox(height: 16),
+              if (classProvider.isLoading) const CircularProgressIndicator(),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    classProvider.createClass(context, classCodeController.text, classNameController.text, classTypeController.text,startDate.toString().substring(0, 10),endDate.toString().substring(0,10), maxStudentsController.text);
-                  },
+                    final int num = int.parse(maxStudentsController.text);
+                    if(num <= 50) {
+                      classProvider.createClass(
+                          context,
+                          classCodeController.text,
+                          classNameController.text,
+                          selectedClassType,
+                          startDate.toString().substring(0, 10),
+                          endDate.toString().substring(0, 10),
+                          maxStudentsController.text);
+                    }else{
+                      _showSuccessSnackbar(context, "Giới hạn lớp là 50", Colors.red);
+                    }
+                    },
                   style: ElevatedButton.styleFrom(
                     textStyle: TextStyle(fontSize: 20),
                   ),
                   child: Text('Tạo lớp học'),
-                ),
+                )
               ),
               SizedBox(height: 20),
               Center(
@@ -86,6 +108,26 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
   Widget _buildTextField(TextEditingController controller,String label) {
     return TextField(
       controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildDropdown(String selectedValue, List<String> items, ValueChanged<String?> onChanged, String label) {
+    return DropdownButtonFormField<String>(
+      value: selectedValue,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
         focusedBorder: OutlineInputBorder(
@@ -125,6 +167,17 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
         }
       },
       controller: TextEditingController(text: isStartDate ? startDate?.toLocal().toString().split(' ')[0] : endDate?.toLocal().toString().split(' ')[0]),
+    );
+  }
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
+      ),
     );
   }
 }

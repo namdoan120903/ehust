@@ -7,7 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:project/model/Class.dart';
 import 'package:provider/provider.dart';
 
+import '../Constant.dart';
+
+
 class ClassProvider with ChangeNotifier {
+
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -26,12 +30,25 @@ class ClassProvider with ChangeNotifier {
       },
     );
   }
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 
   final secureStorage = FlutterSecureStorage();
   String? token;
-  bool _isLoading = false;
+  bool isLoading = false;
   List<Class> classes = [];
   List<Class> registerClass = [];
+  Class? getClassLecturer ;
+
 
   Future<void> createClass(
       BuildContext context,
@@ -51,59 +68,66 @@ class ClassProvider with ChangeNotifier {
       "end_date": end,
       "max_student_amount": amount
     };
-    print("START CREATE CLASS!");
     print(requestBody);
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/create_class'),
+        Uri.parse('${Constant.baseUrl}/it5023e/create_class'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
+      String code = jsonDecode(response.body)['data'];
       print(response.body);
       if (response.statusCode == 200) {
         Class newClass = Class.fromJson(json.decode(response.body)['data']);
         classes.add(newClass);
-        _showErrorDialog(context, "Tạo lớp học mới thành công");
+        _showSuccessSnackbar(context, "Tạo lớp học mới thành công", Colors.green);
         notifyListeners();
-      } else {
-        _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
+      }else if(code == "class id already exists"){
+        _showSuccessSnackbar(context, "Mã lớp đã tồn tại", Colors.red);
+      }
+      else {
+        _showSuccessSnackbar(context,jsonDecode(response.body)['data'] , Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      print(e.toString());
     }
+    isLoading = false;
+    notifyListeners();
   }
 
-  Future<void> get_class_list(BuildContext context) async {
+  Future<void> get_class_list(BuildContext context)async{
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
     };
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_class_list'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_class_list'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes);
-        Map<String, dynamic> jsonData = json.decode(responseBody);
-        debugPrint(responseBody.toString());
-        classes = (jsonData['data'] as List)
+        Map<String, dynamic> jsonData = json.decode(responseBody)['data'];
+
+        classes = (jsonData['page_content'] as List)
             .map((classJson) => Class.fromJson(classJson))
             .toList();
         print("lay du lieu thanh cong");
-        debugPrint(classes.toString());
         notifyListeners();
       } else {
         _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      _showErrorDialog(context, e.toString());
+      print(e.toString());
     }
+
   }
 
-  Future<void> updateClass(BuildContext context, int selectedId, String id,
-      String name, String status, String start, String end) async {
+  Future<void> updateClass(BuildContext context,int selectedId, String id, String name, String status, String start, String end)async{
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -116,13 +140,12 @@ class ClassProvider with ChangeNotifier {
     print(requestBody);
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/edit_class'),
+        Uri.parse('${Constant.baseUrl}/it5023e/edit_class'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
-        classes[selectedId] =
-            Class.fromJson(json.decode(response.body)['data']);
+        classes[selectedId] = Class.fromJson(json.decode(response.body)['data']);
         _showErrorDialog(context, "Cap nhat lớp học thành công");
         print("lay du lieu thanh cong");
         notifyListeners();
@@ -134,8 +157,7 @@ class ClassProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteClass(
-      BuildContext context, String classId, int index) async {
+  Future<void> deleteClass(BuildContext context, String classId, int index)async{
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -143,7 +165,7 @@ class ClassProvider with ChangeNotifier {
     };
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/delete_class'),
+        Uri.parse('${Constant.baseUrl}/it5023e/delete_class'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -158,8 +180,7 @@ class ClassProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
-
-  Future<void> getClassInfoStudent(BuildContext context, String classId) async {
+  Future<void> getClassInfoStudent(BuildContext context, String classId)async{
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -167,22 +188,21 @@ class ClassProvider with ChangeNotifier {
     };
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_basic_class_info'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_basic_class_info'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
         print(response.body);
         final responseBody = utf8.decode(response.bodyBytes);
-        Class newRegisterClass =
-            Class.fromJson(json.decode(responseBody)['data']);
-        if (registerClass.contains(newRegisterClass)) {
-          _showErrorDialog(context, "da co lop nay roi");
-        } else {
+        Class newRegisterClass = Class.fromJson(json.decode(responseBody)['data']);
+        if(registerClass.contains(newRegisterClass)){
+          _showSuccessSnackbar(context, "Đã tồn tại lớp này trong bảng đăng kí", Colors.red);
+        }else{
           registerClass.add(newRegisterClass);
         }
         notifyListeners();
-      } else if (response.statusCode == 400) {
+      }else if(response.statusCode == 400){
         _showErrorDialog(context, "Khong ton tai lop nay");
       } else {
         _showErrorDialog(context, response.body.toString());
@@ -191,20 +211,17 @@ class ClassProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
-
-  void removeRegisterClass(BuildContext context, List<bool> isChecked) {
-    for (int i = isChecked.length - 1; i >= 0; i--) {
-      if (isChecked[i]) {
-        registerClass.removeAt(i);
+  void removeRegisterClass(BuildContext context, List<bool> isChecked){
+      for(int i =isChecked.length-1; i>=0; i--){
+        if(isChecked[i]){
+          registerClass.removeAt(i);
+        }
       }
-    }
-    notifyListeners();
+      notifyListeners();
   }
-
-  Future<void> registerStudentClass(BuildContext context) async {
+  Future<void> registerStudentClass(BuildContext context)async{
     token = await secureStorage.read(key: 'token');
-    final List<String?> classId =
-        registerClass.map((item) => item.classId).toList();
+    final List<String?> classId = registerClass.map((item)=>item.classId).toList();
     final Map<String, dynamic> requestBody = {
       "token": token,
       "class_ids": classId
@@ -212,13 +229,39 @@ class ClassProvider with ChangeNotifier {
     print(requestBody);
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/register_class'),
+        Uri.parse('${Constant.baseUrl}/it5023e/register_class'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
       if (response.statusCode == 200) {
-        _showErrorDialog(context, "Dang ki lop thanh cong");
-        registerClass = [];
+          _showErrorDialog(context, "Dang ki lop thanh cong");
+          registerClass = [];
+        notifyListeners();
+      }
+      else {
+        _showErrorDialog(context, response.body.toString());
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }
+  }
+
+  Future<void> getClassInfoLecturer(BuildContext context, String classId)async{
+    token = await secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "class_id": classId,
+    };
+    try {
+      final response = await http.post(
+        Uri.parse('${Constant.baseUrl}/it5023e/get_class_info'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        print(response.body);
+        final responseBody = utf8.decode(response.bodyBytes);
+        getClassLecturer = Class.fromJson(json.decode(responseBody)['data']);
         notifyListeners();
       } else {
         _showErrorDialog(context, response.body.toString());
@@ -227,4 +270,6 @@ class ClassProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
   }
+
+
 }

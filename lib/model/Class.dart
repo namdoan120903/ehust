@@ -1,13 +1,16 @@
+import 'StudentAccount.dart';
+
 class Class {
   String? classId;
   String? className;
   String? attachedCode;
   String? classType;
   String? lecturerName;
-  int? studentCount;
+  String? studentCount;
   String? startDate;
   String? endDate;
   String? status;
+  List<StudentAccount>? studentAccounts;
 
   Class(
       {this.classId="",
@@ -15,10 +18,11 @@ class Class {
         this.attachedCode="",
         this.classType="",
         this.lecturerName="",
-        this.studentCount=0,
+        this.studentCount="",
         this.startDate="",
         this.endDate="",
-        this.status=""});
+        this.status="",
+        this.studentAccounts});
 
   Class.fromJson(Map<String, dynamic> json) {
     classId = json['class_id'];
@@ -30,6 +34,12 @@ class Class {
     startDate = json['start_date'];
     endDate = json['end_date'];
     status = json['status'];
+    if (json['student_accounts'] != null) {
+      studentAccounts = <StudentAccount>[];
+      json['student_accounts'].forEach((v) {
+        studentAccounts!.add(new StudentAccount.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -43,6 +53,10 @@ class Class {
     data['start_date'] = this.startDate;
     data['end_date'] = this.endDate;
     data['status'] = this.status;
+    if (this.studentAccounts != null) {
+      data['student_accounts'] =
+          this.studentAccounts!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
   @override

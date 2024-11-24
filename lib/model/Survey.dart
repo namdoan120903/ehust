@@ -1,20 +1,24 @@
 class Survey {
-  int? id;
+  String? id;
   String? title;
   String? description;
-  int? lecturerId;
+  String? lecturerId;
   String? deadline;
   String? fileUrl;
   String? classId;
+  bool? is_submitted;
+  String? grade;
+
 
   Survey(
-      {this.id=0,
+      {this.id="",
         this.title="",
         this.description="",
-        this.lecturerId=0,
+        this.lecturerId="",
         this.deadline="",
         this.fileUrl="",
-        this.classId=""});
+        this.classId="",
+      this.is_submitted });
 
   Survey.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -24,6 +28,8 @@ class Survey {
     deadline = json['deadline'];
     fileUrl = json['file_url'];
     classId = json['class_id'];
+    is_submitted = json['is_submitted'];
+    grade = json['grade'];
   }
 
   Map<String, dynamic> toJson() {
@@ -35,6 +41,8 @@ class Survey {
     data['deadline'] = this.deadline;
     data['file_url'] = this.fileUrl;
     data['class_id'] = this.classId;
+    data['is_submitted'] = this.is_submitted;
+    data['grade'] = this.grade;
     return data;
   }
 }

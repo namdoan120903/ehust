@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/lecturer/lecturer_material.dart';
 import 'package:project/screens/lecturer/lecturer_survey.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
@@ -45,8 +46,12 @@ class LecturerClassList extends StatelessWidget {
                       subtitle: Text('${classItem.classType}\n${classItem.status}, ${classItem.lecturerName}'),
                       trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
                       onTap: () {
+                        classProvider.getClassInfoLecturer(context, classItem.classId!);
                         if(route == "survey"){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LecturerSurvey(classA: classItem)));
+                        }
+                        if(route == "material"){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LecturerMaterial(classA: classItem)));
                         }
                       },
                     ),
