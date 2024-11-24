@@ -101,8 +101,17 @@ class _EditMaterialState extends State<EditMaterial> {
               if (materialProvider.isLoading) const CircularProgressIndicator(),
               OutlinedButton(
                 onPressed: () {
-                  materialProvider.edit_material(context, _file!, widget.material.id.toString() ,nameController.text, descriptionController.text, widget.index);
-                },
+                  if(_file!= null) {
+                    String extension = _file!
+                        .path
+                        .split('.')
+                        .last;
+                    materialProvider.edit_material(
+                        context, _file!, widget.material.id.toString(),
+                        nameController.text, descriptionController.text,
+                        widget.index, extension);
+                  }
+                  },
                 child: Text('Chỉnh sửa tài liệu'),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Colors.red),

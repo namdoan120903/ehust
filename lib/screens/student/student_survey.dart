@@ -32,12 +32,26 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
   Widget build(BuildContext context) {
     final surveyProvider = Provider.of<SurveyProvider>(context);
 
-    List<Survey> completedSurveys =
-    surveyProvider.studentSurvey.where((assignment) => assignment.is_submitted!).toList();
-    List<Survey> incompleteSurveys =
-    surveyProvider.studentSurvey.where((assignment) => !assignment.is_submitted!).toList();
-    List<Survey> gradedSurveys =
-    completedSurveys.where((assignment) => assignment.grade != null).toList();
+    // Danh sách bài đã làm và còn hạn
+    List<Survey> completedSurveys = surveyProvider.studentSurvey
+        .where((assignment) =>
+    assignment.is_submitted! &&
+        DateTime.parse(assignment.deadline!).isAfter(DateTime.now()))
+        .toList();
+
+// Danh sách bài chưa làm và còn hạn
+    List<Survey> pendingSurveys = surveyProvider.studentSurvey
+        .where((assignment) =>
+    !assignment.is_submitted! &&
+        DateTime.parse(assignment.deadline!).isAfter(DateTime.now()))
+        .toList();
+
+// Danh sách bài đã hết hạn (bao gồm cả đã làm lẫn chưa làm)
+    List<Survey> expiredSurveys = surveyProvider.studentSurvey
+        .where((assignment) =>
+        DateTime.parse(assignment.deadline!).isBefore(DateTime.now()))
+        .toList();
+
 
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
@@ -59,7 +73,7 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
             tabs: [
               Tab(text: "Chưa làm"),
               Tab(text: "Đã làm"),
-              Tab(text: "Đã chấm điểm"),
+              Tab(text: "Hết hạn"),
             ],
           ),
           Expanded(
@@ -68,7 +82,7 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
               children: [
                 // Tab "Chưa làm"
                 SurveyList(
-                  items: incompleteSurveys,
+                  items: pendingSurveys,
                   showGrade: false,
                   submit: false,
                 ),
@@ -78,10 +92,9 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
                   showGrade: false,
                   submit: true,
                 ),
-                // Tab "Đã chấm điểm"
                 SurveyList(
-                  items: gradedSurveys,
-                  showGrade: true,
+                  items: expiredSurveys,
+                  showGrade: false,
                   submit: true,
                 ),
               ],
@@ -110,7 +123,7 @@ class SurveyList extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: ListTile(
             title: Text('${assignment.title!} - ${assignment.classId} - ${assignment.deadline}'),
-            subtitle: showGrade
+            subtitle:assignment.grade != null
                 ? Text('Điểm: ${assignment.grade}, ${assignment.description!}')
                 : Text(assignment.description!),
             onTap: () {

@@ -13,6 +13,8 @@ class LecturerEditClass extends StatefulWidget {
 class _LecturerCreateClassState extends State<LecturerEditClass> {
   DateTime? startDate;
   DateTime? endDate;
+  String selectedClassType = 'ACTIVE'; // Giá trị mặc định
+  List<String> items = ['ACTIVE', 'COMPLETED', 'UPCOMING'];
 
   void _showDeleteDialog(BuildContext context,ClassProvider classProvider, String classId, int index) {
     showDialog(
@@ -56,8 +58,6 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
         TextEditingController(text: classEdit.classId);
     final TextEditingController classNameController =
         TextEditingController(text: classEdit.className);
-    final TextEditingController statusController =
-        TextEditingController(text: classEdit.status);
     return Scaffold(
         appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
         body: Padding(
@@ -82,7 +82,12 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                   SizedBox(height: 8),
                   _buildTextField(classNameController, 'Tên lớp'),
                   SizedBox(height: 8),
-                  _buildTextField(statusController, 'Trạng thái'),
+                  _buildDropdown(selectedClassType, items, (newValue) {
+                    setState(() {
+                      selectedClassType = newValue!;
+                      print(selectedClassType);
+                    });
+                  }, 'Trạng thái lớp'),
                   SizedBox(height: 8),
                   _buildDatePicker(context, 'Ngày bắt đầu', true),
                   SizedBox(height: 8),
@@ -97,12 +102,13 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                         flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
+                            print(selectedClassType);
                             classProvider.updateClass(
                                 context,
                                 selectedClassId!,
                                 classIdController.text,
                                 classNameController.text,
-                                statusController.text,
+                                selectedClassType,
                                 startDate == null
                                     ? classEdit.startDate!
                                     : startDate.toString().substring(0, 10),
@@ -149,6 +155,26 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
   Widget _buildTextField(TextEditingController controller, String label) {
     return TextField(
       controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildDropdown(String selectedValue, List<String> items, ValueChanged<String?> onChanged, String label) {
+    return DropdownButtonFormField<String>(
+      value: selectedValue,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
         focusedBorder: OutlineInputBorder(

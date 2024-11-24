@@ -1,8 +1,8 @@
 class Survey {
-  String? id;
+  int? id;
   String? title;
   String? description;
-  String? lecturerId;
+  int? lecturerId;
   String? deadline;
   String? fileUrl;
   String? classId;
@@ -11,10 +11,10 @@ class Survey {
 
 
   Survey(
-      {this.id="",
+      {this.id=0,
         this.title="",
         this.description="",
-        this.lecturerId="",
+        this.lecturerId=0,
         this.deadline="",
         this.fileUrl="",
         this.classId="",
@@ -24,7 +24,9 @@ class Survey {
     id = json['id'];
     title = json['title'];
     description = json['description'];
-    lecturerId = json['lecturer_id'];
+    lecturerId = json['lecturer_id'] is String
+        ? int.tryParse(json['lecturer_id']) // Nếu là String thì chuyển sang int
+        : json['lecturer_id'];
     deadline = json['deadline'];
     fileUrl = json['file_url'];
     classId = json['class_id'];

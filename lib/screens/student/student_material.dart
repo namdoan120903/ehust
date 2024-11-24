@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:project/provider/MaterialProvider.dart';
-import 'package:project/screens/lecturer/create_material.dart';
-import 'package:project/screens/lecturer/edit_material.dart';
 import 'package:provider/provider.dart';
 
 import '../../DocumentVIewer.dart';
 import '../../model/Class.dart';
+import '../../provider/MaterialProvider.dart';
 import '../myAppBar.dart';
 
-class LecturerMaterial extends StatefulWidget {
+class StudentMaterial extends StatefulWidget {
   final Class classA;
-  LecturerMaterial({required this.classA});
+  StudentMaterial({required this.classA});
 
   @override
-  State<LecturerMaterial> createState() => _LecturerMaterialState();
+  State<StudentMaterial> createState() => _StudentMaterialState();
 }
 
-class _LecturerMaterialState extends State<LecturerMaterial> {
+class _StudentMaterialState extends State<StudentMaterial> {
 
   @override
   void initState() {
@@ -25,36 +23,6 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
     final materialProvider = Provider.of<MaterialProvider>(context, listen: false);
     materialProvider.getAllMaterial(context, widget.classA.classId!);
     print(materialProvider.materials.toString());
-  }
-
-  void _showDeleteDialog(BuildContext context,MaterialProvider materialProvider, String id, int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Xác Nhận Xóa'),
-          content: Text('Bạn có chắc chắn muốn xóa mục này không?'),
-          actions: [
-            // Nút "Không"
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
-              },
-              child: Text('Không'),
-            ),
-            // Nút "Có"
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
-                materialProvider.deleteMaterial(context, id, index);
-                print('Mục đã bị xóa');
-              },
-              child: Text('Có'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -84,14 +52,6 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
                       color: Colors.red
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateMaterial(classId: widget.classA.classId,)));
-                  },
-                  tooltip: 'Thêm bài tập mới',
-                  color: Colors.red,
-                ),
               ],
             ),Expanded(child:
             ListView.builder(
@@ -107,7 +67,7 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => GoogleDriveViewer(
-                            driveUrl: material.materialLink!
+                              driveUrl: material.materialLink!
                           ),
                         ),
                       );
@@ -124,23 +84,6 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
                         Text(
                           'File: ${material.materialType}', // Văn bản bổ sung
                           style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>EditMaterial(material: material, index: index,)));
-                            }
-                        ),
-                        IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              _showDeleteDialog(context, materialProvider, material.id!, index);
-                            }
                         ),
                       ],
                     ),
