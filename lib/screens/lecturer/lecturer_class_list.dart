@@ -46,6 +46,7 @@ class LecturerClassList extends StatelessWidget {
                       subtitle: Text('${classItem.classType}\n${classItem.status}, ${classItem.lecturerName}'),
                       trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
                       onTap: () {
+                        classProvider.getClassInfoLecturer(context, classItem.classId!);
                         if(route == "survey"){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LecturerSurvey(classA: classItem)));
                         }

@@ -1,5 +1,5 @@
 class MyMaterial {
-  int? id;
+  String? id;
   String? classId;
   String? materialName;
   String? description;

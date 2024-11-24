@@ -1,20 +1,20 @@
 class Survey {
-  int? id;
+  String? id;
   String? title;
   String? description;
-  int? lecturerId;
+  String? lecturerId;
   String? deadline;
   String? fileUrl;
   String? classId;
   bool? is_submitted;
-  int? grade;
+  String? grade;
 
 
   Survey(
-      {this.id=0,
+      {this.id="",
         this.title="",
         this.description="",
-        this.lecturerId=0,
+        this.lecturerId="",
         this.deadline="",
         this.fileUrl="",
         this.classId="",

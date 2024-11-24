@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/model/MyMaterial.dart';
 
+import '../Constant.dart';
+
 class MaterialProvider with ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
   String? token;
@@ -19,7 +21,7 @@ class MaterialProvider with ChangeNotifier {
       String classId, String title, String des) async {
     token = await secureStorage.read(key: 'token');
     try{
-      var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/upload_material"));
+      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/upload_material"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
@@ -66,7 +68,7 @@ class MaterialProvider with ChangeNotifier {
     token = await secureStorage.read(key: 'token');
 
     try {
-      var request = http.MultipartRequest('GET', Uri.parse("http://160.30.168.228:8080/it5023e/get_material_list"));
+      var request = http.MultipartRequest('GET', Uri.parse("${Constant.baseUrl}/it5023e/get_material_list"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
@@ -94,7 +96,7 @@ class MaterialProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteMaterial(BuildContext context, int materialId, int index)async{
+  Future<void> deleteMaterial(BuildContext context, String materialId, int index)async{
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -103,7 +105,7 @@ class MaterialProvider with ChangeNotifier {
     print(requestBody);
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/delete_material'),
+        Uri.parse('${Constant.baseUrl}/it5023e/delete_material'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -123,7 +125,7 @@ class MaterialProvider with ChangeNotifier {
     print(title);
     token = await secureStorage.read(key: 'token');
     try{
-      var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/edit_material"));
+      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/edit_material"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;

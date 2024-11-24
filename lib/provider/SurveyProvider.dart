@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:project/model/Survey.dart';
 
+import '../Constant.dart';
+
 class SurveyProvider with ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
   String? token;
@@ -18,7 +20,7 @@ class SurveyProvider with ChangeNotifier {
       String classId, String title, String date, String des) async {
     token = await secureStorage.read(key: 'token');
     try{
-    var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/create_survey"));
+    var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/create_survey"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
@@ -63,7 +65,7 @@ class SurveyProvider with ChangeNotifier {
       String classId, String surveyId, String date, String des) async {
     token = await secureStorage.read(key: 'token');
     try{
-      var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/create_survey"));
+      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/create_survey"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
@@ -111,7 +113,7 @@ class SurveyProvider with ChangeNotifier {
     };
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_all_surveys'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_all_surveys'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -131,7 +133,7 @@ class SurveyProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }}
 
-  Future<void> deleteSurvey(BuildContext context, int surveyId, int index)async{
+  Future<void> deleteSurvey(BuildContext context, String surveyId, int index)async{
     token = await secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -140,7 +142,7 @@ class SurveyProvider with ChangeNotifier {
     print(requestBody);
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/delete_survey'),
+        Uri.parse('${Constant.baseUrl}/it5023e/delete_survey'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -159,7 +161,7 @@ class SurveyProvider with ChangeNotifier {
       String surveyId, String des, String classId) async {
     token = await secureStorage.read(key: 'token');
     try{
-      var request = http.MultipartRequest('POST', Uri.parse("http://160.30.168.228:8080/it5023e/submit_survey"));
+      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/submit_survey"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
@@ -206,7 +208,7 @@ class SurveyProvider with ChangeNotifier {
     try {
       print("start http request");
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_student_assignments'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_student_assignments'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );

@@ -1,5 +1,5 @@
 class User {
-  int? id;
+  String? id;
   String? email;
   String? name;
   String? token;
@@ -10,7 +10,7 @@ class User {
   String? status;
 
   User(
-      { this.id =0,
+      { this.id ="",
          this.email="",
          this.token="",
          this.role="",
@@ -28,7 +28,7 @@ class User {
     role = json['role'];
     ho = json['ho'];
     ten = json['ten'];
-    avatar = json['avatar'];
+    avatar = json['avatar']??"";
     name = json['name'];
     status = json['status'];
   }

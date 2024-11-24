@@ -89,8 +89,8 @@ class _StudentHomeState extends State<StudentHome> {
       elevation: 5,
       child: InkWell(
         onTap: () {
-          if(route == "/student/class/register"){ Navigator.pushNamed(context, route);};
-          if(route == "/student/survey"){ Navigator.pushNamed(context, route);}
+          if(route == "/student/class/register"){ Navigator.pushNamed(context, route);}
+          else if(route == "/student/survey"){ Navigator.pushNamed(context, route);}
           else{
             Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentClass(route: route)));
           }
