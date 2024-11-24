@@ -2,17 +2,37 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:project/Constant.dart';
+import 'package:project/components/attend_record_lecturer.dart';
+import 'package:project/model/StudentAttendanceRecord.dart';
 
 class RollCallProvider with ChangeNotifier {
   bool _isLoading = false;
-  List<Map<String, dynamic>> _attendanceList = [];
+  List<String> _attendanceList = [];
+  List<StudentAttendanceRecord> _recordForLecturer = [];
   String? _attendanceStatus;
   String? token;
   final secureStorage = FlutterSecureStorage();
 
   bool get isLoading => _isLoading;
-  List<Map<String, dynamic>> get attendanceList => _attendanceList;
+  List<String> get attendanceList => _attendanceList;
   String? get attendanceStatus => _attendanceStatus;
+  List<StudentAttendanceRecord> get recordForLecturer => _recordForLecturer;
+
+  String formatDateString(String dateString) {
+    // Parse the input date string to a DateTime object
+    final DateFormat inputFormat = DateFormat('dd/MM/yyyy');
+    final DateFormat outputFormat = DateFormat('yyyy-MM-dd');
+
+    try {
+      DateTime date = inputFormat.parse(dateString); // Parse to DateTime
+      return outputFormat.format(date); // Format to 'yyyy-MM-dd'
+    } catch (e) {
+      // If parsing fails, return an error or default value
+      return 'Invalid date format';
+    }
+  }
 
   // 1. Take Attendance (take_attendance API)
   //lecturer take attendance
@@ -24,18 +44,19 @@ class RollCallProvider with ChangeNotifier {
     final Map<String, dynamic> requestBody = {
       "token": token,
       "class_id": classId,
-      "date": date,
+      "date": formatDateString(date),
       "attendance_list": absentStudentIds,
     };
     print(requestBody);
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/take_attendance'),
+        Uri.parse('${Constant.baseUrl}/it5023e/take_attendance'),
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
 
       print(response.statusCode);
+      print("body: " + response.body.toString());
 
       if (response.statusCode == 200) {
         _attendanceStatus = "Attendance recorded successfully";
@@ -62,7 +83,7 @@ class RollCallProvider with ChangeNotifier {
         json.encode({"token": token, "class_id": classId}).toString());
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_attendance_record'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_attendance_record'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({"token": token, "class_id": classId}),
       );
@@ -70,8 +91,8 @@ class RollCallProvider with ChangeNotifier {
       print("response.statusCode " + response.statusCode.toString());
       print("response.body " + response.body.toString());
       if (response.statusCode == 200) {
-        _attendanceList = List<Map<String, dynamic>>.from(
-          json.decode(response.body)['attendance_list'],
+        _attendanceList = List<String>.from(
+          json.decode(response.body)['data']["absent_dates"],
         );
       } else {
         _attendanceList = [];
@@ -87,18 +108,18 @@ class RollCallProvider with ChangeNotifier {
 
   // 3. Set Attendance Status (set_attendance_status API)
   //lecturer re set attendance status of a student (attendance_id)
-  Future<void> setAttendanceStatus(String attendanceId, bool status) async {
+  Future<void> setAttendanceStatus(String attendanceId, String status) async {
     _isLoading = true;
     notifyListeners();
     token = await secureStorage.read(key: 'token');
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/set_attendance_status'),
+        Uri.parse('${Constant.baseUrl}/it5023e/set_attendance_status'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "token": token,
           "attendance_id": attendanceId,
-          "status": status ? "present" : "absent",
+          "status": status.toUpperCase(),
         }),
       );
 
@@ -121,26 +142,35 @@ class RollCallProvider with ChangeNotifier {
       String classId, String date, int page, int pageSize) async {
     _isLoading = true;
     notifyListeners();
-
+    final Map<String, dynamic> requestBody = {
+      "token": token, // Ensure 'token' is defined in your class
+      "class_id": classId,
+      "date": date,
+      "pageable_request": {
+        "page": page.toString(),
+        "page_size": pageSize.toString()
+      }
+    };
+    print("requestBody: " + requestBody.toString());
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_attendance_list'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_attendance_list'),
         headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "token": token, // Ensure 'token' is defined in your class
-          "class_id": classId,
-          "date": date,
-          "pageable_request": {
-            "page": page.toString(),
-            "page_size": pageSize.toString()
-          }
-        }),
+        body: json.encode(requestBody),
       );
-
+      _recordForLecturer = [];
       if (response.statusCode == 200) {
-        _attendanceList = List<Map<String, dynamic>>.from(
-          json.decode(response.body)['attendance_list'],
-        );
+        print("response.body " + response.body.toString());
+        // Extract the list of attendance details
+        List<dynamic> attendanceDetails =
+            json.decode(response.body)['data']['attendance_student_details'];
+
+        // Convert the list of maps into a List<StudentAttendanceRecord>
+        _recordForLecturer = attendanceDetails
+            .map((attendance) => StudentAttendanceRecord.fromMap(attendance))
+            .toList();
+        (_) => LecturerAttendancePage(classId: classId);
+        //data tam thoi ok, se chinh sua de hien thi sau
       } else {
         _attendanceList = [];
       }

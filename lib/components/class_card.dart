@@ -65,6 +65,7 @@ class ClassCard extends StatelessWidget {
                 if (userRole == 'LECTURER')
                   ElevatedButton(
                     onPressed: () {
+                      print("Navigating with classId: $classId");
                       Navigator.pushNamed(
                         context,
                         '/lecturer/class/take_attendance',

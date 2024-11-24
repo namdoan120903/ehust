@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:project/model/StudentAttendanceRecord.dart';
 import 'package:provider/provider.dart';
 import 'package:project/provider/RollCallProvider.dart';
 
 class LecturerAttendancePage extends StatefulWidget {
   final String classId;
 
-  const LecturerAttendancePage({Key? key, required this.classId})
-      : super(key: key);
+  const LecturerAttendancePage({super.key, required this.classId});
 
   @override
   _LecturerAttendancePageState createState() => _LecturerAttendancePageState();
@@ -15,6 +16,7 @@ class LecturerAttendancePage extends StatefulWidget {
 class _LecturerAttendancePageState extends State<LecturerAttendancePage> {
   final TextEditingController dateController = TextEditingController();
   DateTime? selectedDate;
+  bool isDataLoaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,30 +44,40 @@ class _LecturerAttendancePageState extends State<LecturerAttendancePage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
-                final dateStr =
-                    selectedDate != null ? selectedDate.toString() : "";
-                await rollCallProvider.getAttendanceList(
-                    widget.classId, dateStr, 0, 2);
+                final DateFormat outputFormat = DateFormat('yyyy-MM-dd');
+                final dateStr = selectedDate != null
+                    ? outputFormat.format(selectedDate!)
+                    : "";
 
-                if (rollCallProvider.attendanceList.isEmpty) {
+                await rollCallProvider.getAttendanceList(
+                    widget.classId, dateStr, 0, 10);
+                print("rollCallProvider.recordForLecturer " +
+                    rollCallProvider.recordForLecturer.toString());
+
+                if (rollCallProvider.recordForLecturer.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("Không có dữ liệu điểm danh."),
                   ));
+                } else {
+                  setState(() {
+                    isDataLoaded = true;
+                  });
                 }
               },
               child: const Text("Lấy danh sách điểm danh"),
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: rollCallProvider.attendanceList.isNotEmpty
-                  ? _buildAttendanceTable(rollCallProvider.attendanceList)
-                  : const Center(
-                      child: Text(
-                        "Không có dữ liệu điểm danh",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-            ),
+            if (isDataLoaded)
+              Expanded(
+                child: rollCallProvider.recordForLecturer.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Không có dữ liệu điểm danh",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      )
+                    : _buildAttendanceTable(rollCallProvider.recordForLecturer),
+              ),
           ],
         ),
       ),
@@ -101,7 +113,8 @@ class _LecturerAttendancePageState extends State<LecturerAttendancePage> {
     );
   }
 
-  Widget _buildAttendanceTable(List<Map<String, dynamic>> attendanceList) {
+  Widget _buildAttendanceTable(List<StudentAttendanceRecord> attendanceList) {
+    final rollCallProvider = Provider.of<RollCallProvider>(context);
     return Table(
       border: TableBorder.all(color: Colors.black),
       columnWidths: const {
@@ -164,7 +177,8 @@ class _LecturerAttendancePageState extends State<LecturerAttendancePage> {
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(8),
-                    child: Text(student['id'], textAlign: TextAlign.center),
+                    child:
+                        Text(student.attendanceId, textAlign: TextAlign.center),
                   ),
                 ),
               ),
@@ -173,7 +187,7 @@ class _LecturerAttendancePageState extends State<LecturerAttendancePage> {
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(8),
-                    child: Text(student['name'], textAlign: TextAlign.center),
+                    child: Text(student.studentId, textAlign: TextAlign.center),
                   ),
                 ),
               ),
@@ -182,13 +196,35 @@ class _LecturerAttendancePageState extends State<LecturerAttendancePage> {
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(8),
-                    child: Text(
-                      student['status'], // Display attendance status
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: student['status'] == 'ABSENCE'
-                            ? Colors.red
-                            : Colors.green,
+                    child: GestureDetector(
+                      onTap: () async {
+                        // Toggle status between PRESENT and UNEXCUSED_ABSENCE
+                        String newStatus = student.status == 'PRESENT'
+                            ? 'UNEXCUSED_ABSENCE'
+                            : 'PRESENT';
+
+                        // Update the attendance status via API call
+                        await rollCallProvider.setAttendanceStatus(
+                          student.attendanceId,
+                          newStatus,
+                        );
+
+                        // Reload the page to reflect the change
+                        final DateFormat outputFormat =
+                            DateFormat('yyyy-MM-dd');
+                        final dateStr = selectedDate != null
+                            ? outputFormat.format(selectedDate!)
+                            : "";
+                        await rollCallProvider.getAttendanceList(
+                            widget.classId, dateStr, 0, 10);
+                      },
+                      child: Icon(
+                        student.status == 'PRESENT'
+                            ? Icons.check_circle
+                            : Icons.cancel,
+                        color: student.status == 'PRESENT'
+                            ? Colors.green
+                            : Colors.red,
                       ),
                     ),
                   ),

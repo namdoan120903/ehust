@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For formatting dates
-import 'package:project/components/custom_button.dart';
-import 'package:project/provider/RollCallProvider.dart';
-import 'package:provider/provider.dart'; // Import provider
+import 'package:project/components/custom_button.dart'; // Your custom button widget
+import 'package:project/model/StudentAccount.dart'; // Ensure the path is correct
+import 'package:project/model/StudentAttendance.dart'; // Ensure the path is correct
+import 'package:project/provider/ClassProvider.dart'; // Ensure the path is correct
+import 'package:project/provider/RollCallProvider.dart'; // Ensure the path is correct
+import 'package:provider/provider.dart'; // Provider package
 
 class RollCallScreen extends StatefulWidget {
   @override
@@ -14,43 +17,44 @@ class _RollCallScreenState extends State<RollCallScreen> {
       DateFormat('dd/MM/yyyy').format(DateTime.now()); // Get the current date
   String classId = ''; // Default empty string
 
+  late List<StudentAccount> studentAccounts; // Declare studentAccounts here
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     // Retrieve classId from the arguments passed through the route
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args != null && args is String) {
-      classId = args; // Assign the passed classId
+    if (args != null) {
+      classId = args.toString();
     } else {
       classId = ''; // Default value if no classId is passed
     }
-  }
 
-  // Initialize the students data with attendance status
-  List<Map<String, dynamic>> students = [
-    {
-      'id': 'E190001',
-      'name': 'Nguyễn Văn Anh',
-      'attendanceStatus': 'NOT_ABSENCE'
-    },
-    {
-      'id': 'E190002',
-      'name': 'Nguyễn Thị Phương Anh',
-      'attendanceStatus': 'NOT_ABSENCE'
-    },
-    {
-      'id': 'E190003',
-      'name': 'Lê Văn Hoàng',
-      'attendanceStatus': 'NOT_ABSENCE'
-    },
-    // Add more students here...
-  ];
+    // Now call getClassInfoLecturer after classId has been set
+    final classProvider = Provider.of<ClassProvider>(context, listen: false);
+
+    // Only fetch the class info if classId is not empty
+    if (classId.isNotEmpty) {
+      classProvider.getClassInfoLecturer(context, classId);
+      if (classProvider.getClassLecturer?.studentAccounts != null) {
+        studentAccounts = classProvider.getClassLecturer!.studentAccounts!;
+      } else {
+        studentAccounts = [];
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // Get the RollCallProvider
     final rollCallProvider = Provider.of<RollCallProvider>(context);
-
+    List<StudentAttendance> students = studentAccounts.map((student) {
+      return StudentAttendance(
+        id: student.studentId ?? "",
+        name: "${student.lastName ?? ""} ${student.firstName ?? ""}".trim(),
+        accountId: student.accountId ?? "",
+      );
+    }).toList();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -66,7 +70,7 @@ class _RollCallScreenState extends State<RollCallScreen> {
         backgroundColor: Colors.red[700],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             // Display the current date (non-editable)
@@ -75,19 +79,19 @@ class _RollCallScreenState extends State<RollCallScreen> {
               children: [
                 Text("Ngày điểm danh: "),
                 Text(currentDate,
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView(
                 children: [
                   Table(
                     border: TableBorder.all(color: Colors.black),
                     columnWidths: {
-                      0: FractionColumnWidth(0.3), // ID column
-                      1: FractionColumnWidth(0.5), // Name column
-                      3: FractionColumnWidth(0.2), // Attendance off column
+                      0: const FractionColumnWidth(0.3), // ID column
+                      1: const FractionColumnWidth(0.5), // Name column
+                      3: const FractionColumnWidth(0.2), // Attendance column
                     },
                     children: [
                       // Table headers
@@ -144,8 +148,8 @@ class _RollCallScreenState extends State<RollCallScreen> {
                                   TableCellVerticalAlignment.middle,
                               child: Center(
                                 child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(student['id'],
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(student.id,
                                       textAlign: TextAlign.center),
                                 ),
                               ),
@@ -155,8 +159,8 @@ class _RollCallScreenState extends State<RollCallScreen> {
                                   TableCellVerticalAlignment.middle,
                               child: Center(
                                 child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(student['name'],
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(student.name,
                                       textAlign: TextAlign.center),
                                 ),
                               ),
@@ -166,24 +170,39 @@ class _RollCallScreenState extends State<RollCallScreen> {
                                   TableCellVerticalAlignment.middle,
                               child: Center(
                                 child: Padding(
-                                  padding: EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(8),
                                   child: GestureDetector(
                                     onTap: () {
+                                      print("before student.attendanceStatus " +
+                                          student.attendanceStatus.toString());
                                       setState(() {
-                                        // Toggle attendance status
-                                        student['attendanceStatus'] =
-                                            student['attendanceStatus'] ==
-                                                    'ABSENCE'
-                                                ? 'NOT_ABSENCE'
-                                                : 'ABSENCE';
+                                        // Find the student by their id and toggle their attendance status
+                                        int studentIndex = students.indexWhere(
+                                            (s) => s.id == student.id);
+                                        if (studentIndex != -1) {
+                                          // Toggle the attendance status
+                                          if (students[studentIndex]
+                                                  .attendanceStatus ==
+                                              'ABSENCE') {
+                                            students[studentIndex]
+                                                    .attendanceStatus =
+                                                'NOT_ABSENCE';
+                                          } else {
+                                            students[studentIndex]
+                                                .attendanceStatus = 'ABSENCE';
+                                          }
+                                        }
+                                        print(
+                                            "after student.attendanceStatus " +
+                                                student.attendanceStatus
+                                                    .toString());
                                       });
                                     },
                                     child: Icon(
-                                      student['attendanceStatus'] ==
-                                              'NOT_ABSENCE'
+                                      student.attendanceStatus == 'NOT_ABSENCE'
                                           ? Icons.check_circle
                                           : Icons.cancel,
-                                      color: student['attendanceStatus'] ==
+                                      color: student.attendanceStatus ==
                                               'NOT_ABSENCE'
                                           ? Colors.green
                                           : Colors.red,
@@ -206,12 +225,12 @@ class _RollCallScreenState extends State<RollCallScreen> {
                 // Collect the absent student IDs
                 List<String> absentStudentIds = students
                     .where((student) =>
-                        student['attendanceStatus'] ==
+                        student.attendanceStatus ==
                         'ABSENCE') // Filter for ABSENCE status
                     .map((student) =>
-                        student['id'].toString()) // Extract the student IDs
+                        student.accountId.toString()) // Extract the student IDs
                     .toList();
-                print("absentStudentIds  " + absentStudentIds.toString());
+                print("absentStudentIds: " + absentStudentIds.toString());
 
                 // Call the API to take attendance
                 rollCallProvider.takeAttendance(
