@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/class_info.dart';
 import 'package:project/screens/lecturer/lecturer_survey.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:project/screens/student/student_material.dart';
@@ -47,8 +48,12 @@ class StudentClass extends StatelessWidget {
                       subtitle: Text('${classItem.classType}\n${classItem.status}, ${classItem.lecturerName}'),
                       trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
                       onTap: () {
-                        classProvider.getClassInfoLecturer(context, classItem.classId!);
+
                         print(route);
+                        if(route == "class"){
+                          classProvider.getClassInfoLecturer(context, classItem.classId!);
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ClassInfo()));
+                        }
                         if(route == "material") Navigator.push(context, MaterialPageRoute(builder: (context)=> StudentMaterial(classA: classItem,)));
                       },
                     ),

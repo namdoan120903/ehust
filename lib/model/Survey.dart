@@ -28,6 +28,7 @@ class Survey {
         ? int.tryParse(json['lecturer_id']) // Nếu là String thì chuyển sang int
         : json['lecturer_id'];
     deadline = json['deadline'];
+
     fileUrl = json['file_url'];
     classId = json['class_id'];
     is_submitted = json['is_submitted'];

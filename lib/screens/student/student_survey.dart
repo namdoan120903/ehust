@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/student/student_submission.dart';
 import 'package:project/screens/student/student_submit_survey.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,8 @@ class StudentSurvey extends StatefulWidget {
 
 class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  List<Survey> completedSurveys = [];
+  List<Survey> pendingSurveys = [];List<Survey> expiredSurveys = [];
 
   @override
   void initState() {
@@ -21,6 +24,8 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
     surveyProvider.get_survey_student(context);
     _tabController = TabController(length: 3, vsync: this);
   }
+
+
 
   @override
   void dispose() {
@@ -33,25 +38,24 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
     final surveyProvider = Provider.of<SurveyProvider>(context);
 
     // Danh sách bài đã làm và còn hạn
-    List<Survey> completedSurveys = surveyProvider.studentSurvey
+     completedSurveys = surveyProvider.studentSurvey
         .where((assignment) =>
     assignment.is_submitted! &&
         DateTime.parse(assignment.deadline!).isAfter(DateTime.now()))
         .toList();
 
 // Danh sách bài chưa làm và còn hạn
-    List<Survey> pendingSurveys = surveyProvider.studentSurvey
+     pendingSurveys = surveyProvider.studentSurvey
         .where((assignment) =>
     !assignment.is_submitted! &&
         DateTime.parse(assignment.deadline!).isAfter(DateTime.now()))
         .toList();
 
 // Danh sách bài đã hết hạn (bao gồm cả đã làm lẫn chưa làm)
-    List<Survey> expiredSurveys = surveyProvider.studentSurvey
+     expiredSurveys = surveyProvider.studentSurvey
         .where((assignment) =>
         DateTime.parse(assignment.deadline!).isBefore(DateTime.now()))
         .toList();
-
 
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
@@ -83,19 +87,20 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
                 // Tab "Chưa làm"
                 SurveyList(
                   items: pendingSurveys,
-                  showGrade: false,
                   submit: false,
+                  view: false,
                 ),
                 // Tab "Đã làm"
                 SurveyList(
                   items: completedSurveys,
-                  showGrade: false,
                   submit: true,
+                  view: true,
                 ),
                 SurveyList(
                   items: expiredSurveys,
-                  showGrade: false,
-                  submit: true,
+                  submit: false,
+                  view: false,
+                  expired: true,
                 ),
               ],
             ),
@@ -108,10 +113,11 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
 
 class SurveyList extends StatelessWidget {
   final List<Survey> items;
-  final bool showGrade;
   final bool submit;
+  final bool view;
+  final bool expired;
 
-  SurveyList({required this.items, this.showGrade = false, required this.submit});
+  SurveyList({required this.items, required this.submit, required this.view, this.expired = false});
 
   @override
   Widget build(BuildContext context) {
@@ -123,17 +129,17 @@ class SurveyList extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: ListTile(
             title: Text('${assignment.title!} - ${assignment.classId} - ${assignment.deadline}'),
-            subtitle:assignment.grade != null
-                ? Text('Điểm: ${assignment.grade}, ${assignment.description!}')
-                : Text(assignment.description!),
+            subtitle:Text(assignment.description!),
             onTap: () {
-              if(submit == false){
+              if(submit == false && expired == false){
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => StudentSubmitSurvey(survey: assignment),
                 ),
-              );}
+              );
+              }
+              if(view ==true )Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentSubmission(id: assignment.id.toString(),)));
             },
           ),
         );

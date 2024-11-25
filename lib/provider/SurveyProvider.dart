@@ -17,6 +17,7 @@ class SurveyProvider with ChangeNotifier {
   bool isLoading = false;
   List<Survey> studentSurvey = [];
   List<Submission> submissions = [];
+  Submission? selectSubmission;
 
   Future<void> create_survey(BuildContext context, File uploadFile,
       String classId, String title, String date, String des) async {
@@ -302,7 +303,34 @@ class SurveyProvider with ChangeNotifier {
 
   }
 
+  Future<void> get_submission(BuildContext context, String assignment_id)async{
+    token = await secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "assignment_id": assignment_id
+    };
+    try {
+      final response = await http.post(
+        Uri.parse('${Constant.baseUrl}/it5023e/get_submission'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonData = json.decode(responseBody);
+        print(responseBody);
+        selectSubmission =  Submission.fromJson(jsonData['data']);
+        print(selectSubmission);
+        notifyListeners();
+      } else {
+        _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
+      }
+    } catch (e) {
+      _showErrorDialog(context, e.toString());
+      print(e.toString());
+    }
 
+  }
 
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(

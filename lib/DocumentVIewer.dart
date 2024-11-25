@@ -40,7 +40,7 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
+      appBar: MyAppBar(check: true, title: "EHUST"),
       body:WebViewWidget(controller: controller)
     );}
 }
