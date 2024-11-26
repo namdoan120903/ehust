@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/Constant.dart';
+import 'package:project/main.dart';
 
 import '../model/User.dart';
 
@@ -16,6 +18,7 @@ class AuthProvider with ChangeNotifier {
   String? _haveCode;
   bool _isLogin = false;
   String? _token;
+  String? _fcm_token;
   String? _role;
   User _user = User();
   String? _verify_code = "";
@@ -33,6 +36,7 @@ class AuthProvider with ChangeNotifier {
   String? get haveCode => _haveCode;
   String? get token => _token;
   String? get role => _role;
+  String? get fcm_token => _fcm_token;
 
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
@@ -56,13 +60,14 @@ class AuthProvider with ChangeNotifier {
   Future<void> login(
       BuildContext context, String email, String password) async {
     int deviceId = 1;
+    _fcm_token = await FirebaseMessaging.instance.getToken();
     final Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
       "device_id": deviceId,
-      "fcm_token": ""
+      "fcm_token": _fcm_token ?? ""
     };
-    print(requestBody);
+    print("BODY LOGIN: " + requestBody.toString());
     _isLoading = true;
     notifyListeners();
 
