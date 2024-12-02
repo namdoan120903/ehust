@@ -70,7 +70,6 @@ class ClassProvider with ChangeNotifier {
       "end_date": end,
       "max_student_amount": amount
     };
-    print(requestBody);
     isLoading = true;
     notifyListeners();
     try {
@@ -79,14 +78,15 @@ class ClassProvider with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
-      String code = jsonDecode(response.body)['data'];
       print(response.body);
       if (response.statusCode == 200) {
         Class newClass = Class.fromJson(json.decode(response.body)['data']);
+        print(newClass);
         classes.add(newClass);
         _showSuccessSnackbar(context, "Tạo lớp học mới thành công", Colors.green);
+        Navigator.pop(context);
         notifyListeners();
-      }else if(code == "class id already exists"){
+      }else if(response.statusCode == 400){
         _showSuccessSnackbar(context, "Mã lớp đã tồn tại", Colors.red);
       }
       else {
@@ -267,6 +267,7 @@ class ClassProvider with ChangeNotifier {
         print(response.body);
         final responseBody = utf8.decode(response.bodyBytes);
         getClassLecturer = Class.fromJson(json.decode(responseBody)['data']);
+        print(getClassLecturer);
         notifyListeners();
       } else {
         _showErrorDialog(context, response.body.toString());

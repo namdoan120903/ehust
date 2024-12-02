@@ -15,6 +15,8 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
   DateTime? endDate;
   String selectedClassType = 'ACTIVE'; // Giá trị mặc định
   List<String> items = ['ACTIVE', 'COMPLETED', 'UPCOMING'];
+  TextEditingController startDateController = TextEditingController();
+ TextEditingController endDateController =TextEditingController();
 
   void _showDeleteDialog(BuildContext context,ClassProvider classProvider, String classId, int index) {
     showDialog(
@@ -57,7 +59,12 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     final TextEditingController classIdController =
         TextEditingController(text: classEdit.classId);
     final TextEditingController classNameController =
-        TextEditingController(text: classEdit.className);
+        TextEditingController(text: classEdit.startDate);
+     startDateController =
+     TextEditingController(text: classEdit.startDate);
+      endDateController =
+     TextEditingController(text: classEdit.endDate);
+
     return Scaffold(
         appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
         body: Padding(
@@ -186,7 +193,7 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
   }
 
   Widget _buildDatePicker(
-      BuildContext context, String label, bool isStartDate) {
+      BuildContext context, String label, bool isStartDate, ) {
     return TextField(
       readOnly: true,
       decoration: InputDecoration(
@@ -208,17 +215,17 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
         if (selectedDate != null) {
           setState(() {
             if (isStartDate) {
-              startDate = selectedDate;
+              startDateController.text = selectedDate.toLocal().toString().split(' ')[0];
             } else {
-              endDate = selectedDate;
+              endDateController.text = selectedDate.toLocal().toString().split(' ')[0];
             }
           });
         }
       },
       controller: TextEditingController(
           text: isStartDate
-              ? startDate?.toLocal().toString().split(' ')[0]
-              : endDate?.toLocal().toString().split(' ')[0]),
-    );
+              ? startDateController.text
+              : endDateController.text,
+    ));
 
 }}

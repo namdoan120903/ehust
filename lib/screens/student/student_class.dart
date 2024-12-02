@@ -52,7 +52,7 @@ class StudentClass extends StatelessWidget {
                         print(route);
                         if(route == "class"){
                           classProvider.getClassInfoLecturer(context, classItem.classId!);
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ClassInfo()));
+                          if(classProvider.getClassLecturer!=null) Navigator.push(context, MaterialPageRoute(builder: (context)=>ClassInfo()));
                         }
                         if(route == "material") Navigator.push(context, MaterialPageRoute(builder: (context)=> StudentMaterial(classA: classItem,)));
                       },

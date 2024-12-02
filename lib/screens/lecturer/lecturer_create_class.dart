@@ -69,7 +69,11 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
                 child: ElevatedButton(
                   onPressed: () {
                     final int num = int.parse(maxStudentsController.text);
-                    if(num <= 50) {
+                    if(num >50 || num< 0) {
+                      _showSuccessSnackbar(context, "Giới hạn lớp là 50", Colors.red);
+                    }else if(classCodeController.text.length !=6){
+                      _showSuccessSnackbar(context, "Mã lớp phải có 6 số", Colors.red);
+                    }else{
                       classProvider.createClass(
                           context,
                           classCodeController.text,
@@ -78,8 +82,6 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
                           startDate.toString().substring(0, 10),
                           endDate.toString().substring(0, 10),
                           maxStudentsController.text);
-                    }else{
-                      _showSuccessSnackbar(context, "Giới hạn lớp là 50", Colors.red);
                     }
                     },
                   style: ElevatedButton.styleFrom(

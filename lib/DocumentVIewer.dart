@@ -13,6 +13,7 @@ class GoogleDriveViewer extends StatefulWidget {
 
 class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
   late WebViewController controller;
+  bool _isLoading = true; // Biến trạng thái để theo dõi tiến trình tải
 
   @override
   void initState() {
@@ -27,11 +28,17 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
             print('Loading: $progress%');
           },
           onPageStarted: (String url) {
+            setState(() {
+              _isLoading = true; // Khi bắt đầu tải, hiển thị loading
+            });
             print('Page started loading: $url');
           },
           onPageFinished: (String url) {
+            setState(() {
+              _isLoading = false; // Khi tải xong, ẩn loading
+            });
             print('Page finished loading: $url');
-          }
+          },
         ),
       )
       ..loadRequest(Uri.parse(widget.driveUrl));
@@ -40,7 +47,19 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(check: true, title: "EHUST"),
-      body:WebViewWidget(controller: controller)
-    );}
+      appBar: MyAppBar(check: true, title: 'EHUST',),
+      body: Stack(
+        children: [
+          // WebView
+          WebViewWidget(controller: controller),
+
+          // Nếu đang tải, hiển thị CircularProgressIndicator
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
+      ),
+    );
+  }
 }

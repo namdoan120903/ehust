@@ -5,11 +5,13 @@ import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 
 class ClassInfo extends StatefulWidget {
+
   @override
   State<ClassInfo> createState() => _ClassInfoState();
 }
 
 class _ClassInfoState extends State<ClassInfo> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +19,7 @@ class _ClassInfoState extends State<ClassInfo> {
     Class? classModel = classProvider.getClassLecturer;
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST"),
-      body:
-           ListView(
+      body: ListView(
             padding: EdgeInsets.all(16.0),
             children: [
               // Thông tin lớp học

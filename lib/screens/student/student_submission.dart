@@ -20,6 +20,10 @@ class _StudentSubmissionState extends State<StudentSubmission> {
   void initState() {
     super.initState();
     // Lấy instance của ClassProvider mà không lắng nghe các thay đổi
+    _initData();
+  }
+
+  Future<void> _initData() async {
     final surveyProvider = Provider.of<SurveyProvider>(context, listen: false);
     surveyProvider.get_submission(context, widget.id);
   }

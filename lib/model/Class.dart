@@ -1,6 +1,7 @@
 import 'StudentAccount.dart';
 
 class Class {
+  int? id;
   String? classId;
   String? className;
   String? attachedCode;
@@ -13,7 +14,8 @@ class Class {
   List<StudentAccount>? studentAccounts;
 
   Class(
-      {this.classId="",
+      {this.id=0,
+        this.classId="",
         this.className="",
         this.attachedCode="",
         this.classType="",
@@ -25,6 +27,7 @@ class Class {
         this.studentAccounts});
 
   Class.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     classId = json['class_id'];
     className = json['class_name'];
     attachedCode = json['attached_code'];
