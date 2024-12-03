@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:project/provider/AuthProvider.dart';
 import 'package:project/provider/ClassProvider.dart';
+import 'package:project/provider/FireBaseApi.dart';
 import 'package:project/provider/NotificationProvider.dart';
 import 'package:project/provider/RollCallProvider.dart';
 import 'package:project/provider/SurveyProvider.dart';
@@ -22,42 +23,12 @@ import 'package:project/screens/student/student_class_register.dart';
 import 'package:project/screens/student/student_home.dart';
 import 'package:provider/provider.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
-}
-
-Future<void> requestNotificationPermissions() async {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  print('User granted permission: ${settings.authorizationStatus}');
-}
-
-Future<void> checkInitialMessage() async {
-  RemoteMessage? initialMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
-
-  if (initialMessage != null) {
-    print('App launched due to a notification: ${initialMessage.data}');
-  }
-}
-
-Future<void> getFcmToken() async {
-  String? token = await FirebaseMessaging.instance.getToken();
-  print('FCM Token: $token');
-}
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  await FireBaseApi().initNotifications();
   runApp(const MyApp());
 }
 
@@ -69,20 +40,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String? _fcm_token;
   @override
   void initState() {
     super.initState();
-    checkInitialMessage();
-    getFcmToken();
-
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Foreground message received: ${message.notification?.title}');
       if (message.notification != null) {
         print('Notification Body: ${message.notification!.body}');
       }
     });
-
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       print('FCM Token refreshed: $newToken');
     });
@@ -98,6 +64,7 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => RollCallProvider()),
         ],
         child: MaterialApp(
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           routes: {
             '/student': (context) => StudentHome(),

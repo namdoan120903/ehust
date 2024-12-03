@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:project/Constant.dart';
 import 'package:project/provider/AuthProvider.dart';
 
 class NotificationProvider with ChangeNotifier {
@@ -26,7 +28,7 @@ class NotificationProvider with ChangeNotifier {
             {"token": token, "index": index, "count": count}).toString());
     try {
       final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/get_notifications'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_notifications'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({"token": token, "index": index, "count": count}),
       );
@@ -58,8 +60,7 @@ class NotificationProvider with ChangeNotifier {
             "notification_ids": notificationIds
           }).toString());
       final response = await http.post(
-        Uri.parse(
-            'http://160.30.168.228:8080/it5023e/mark_notification_as_read'),
+        Uri.parse('${Constant.baseUrl}/it5023e/mark_notification_as_read'),
         headers: {"Content-Type": "application/json"},
         body:
             json.encode({"token": token, "notification_ids": notificationIds}),
@@ -85,8 +86,7 @@ class NotificationProvider with ChangeNotifier {
 
     try {
       final response = await http.post(
-        Uri.parse(
-            'http://160.30.168.228:8080/it5023e/get_unread_notification_count'),
+        Uri.parse('${Constant.baseUrl}/it5023e/get_unread_notification_count'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({"token": token}),
       );
@@ -109,35 +109,47 @@ class NotificationProvider with ChangeNotifier {
     required String message,
     required String userName,
     required String type,
+    File? image, // Optional image file
   }) async {
-    token = await secureStorage.read(key: 'token');
+    String? token = await secureStorage.read(key: 'token');
     final results = await authProvider.searchAccount(userName);
     List<Map<String, dynamic>> searchResults = results;
     int toUser = searchResults[0]["account_id"];
-    print("start send notification");
-    print("Body: " +
-        json.encode({
-          "token": token,
-          "message": message,
-          "to_user": toUser,
-          "type": type,
-        }).toString());
-    try {
-      final response = await http.post(
-        Uri.parse('http://160.30.168.228:8080/it5023e/send_notification'),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "token": token,
-          "message": message,
-          "to_user": toUser,
-          "type": type,
-        }),
-      );
 
+    print("Start sending notification...");
+    print("Token: $token");
+    print("Message: $message");
+    print("To User: $toUser");
+    print("Type: $type");
+
+    try {
+      // Prepare the multipart request
+      final uri = Uri.parse('${Constant.baseUrl}/it5023e/send_notification');
+      final request = http.MultipartRequest('POST', uri);
+
+      // Add fields
+      request.fields['token'] = token ?? '';
+      request.fields['message'] = message;
+      request.fields['toUser'] = toUser.toString();
+      request.fields['type'] = type;
+
+      // Add optional image if provided
+      if (image != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'image',
+          image.path,
+        ));
+      }
+
+      // Send the request
+      final response = await request.send();
+
+      // Handle the response
       if (response.statusCode == 200) {
         print("Notification sent successfully!");
       } else {
-        print("Failed to send notification: ${response.body}");
+        print("Failed to send notification: ${response.statusCode}");
+        print(await response.stream.bytesToString());
       }
     } catch (error) {
       print("Error sending notification: $error");

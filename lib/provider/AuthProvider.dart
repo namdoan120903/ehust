@@ -60,12 +60,12 @@ class AuthProvider with ChangeNotifier {
   Future<void> login(
       BuildContext context, String email, String password) async {
     int deviceId = 1;
-    _fcm_token = await FirebaseMessaging.instance.getToken();
+    _fcm_token = await _secureStorage.read(key: 'fcm_token');
     final Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
       "device_id": deviceId,
-      "fcm_token": _fcm_token ?? ""
+      "fcm_token": _fcm_token
     };
     print("BODY LOGIN: " + requestBody.toString());
     _isLoading = true;

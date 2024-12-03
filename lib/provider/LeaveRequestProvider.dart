@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:project/Constant.dart';
 
 class LeaveRequestProvider with ChangeNotifier {
-  final _baseUrl = 'http://160.30.168.228:8080/it5023e';
   final secureStorage = FlutterSecureStorage();
   String? _token;
   bool _isLoading = false;
@@ -29,7 +29,7 @@ class LeaveRequestProvider with ChangeNotifier {
     try {
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('$_baseUrl/request_absence'),
+        Uri.parse('${Constant.baseUrl}/request_absence'),
       )
         ..fields['token'] = _token ?? ''
         ..fields['classId'] = classId
@@ -60,7 +60,7 @@ class LeaveRequestProvider with ChangeNotifier {
 
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/review_absence_request'),
+        Uri.parse('${Constant.baseUrl}/review_absence_request'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "token": _token,
@@ -93,7 +93,7 @@ class LeaveRequestProvider with ChangeNotifier {
 
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/get_absence_requests'),
+        Uri.parse('${Constant.baseUrl}/get_absence_requests'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "token": _token,
