@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 
+import '../../model/Class.dart';
 import '../../provider/ClassProvider.dart';
 
 class OpenClass extends StatefulWidget {
@@ -18,16 +19,26 @@ class _OpenClassState extends State<OpenClass> {
   String? _selectedType;
   int _currentPage = 0;
   final int _classesPerPage = 3;
+  List<Class> filteredClasses = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Lấy instance của ClassProvider mà không lắng nghe các thay đổi
+    final classProvider = Provider.of<ClassProvider>(context, listen: false);
+    classProvider.getOpenClass(context, _idController.text, _selectedStatus, _nameController.text, _selectedType);
+  }
 
   bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     final classProvider = Provider.of<ClassProvider>(context);
-    final totalClasses = classProvider.openClasss;
-    final totalPages = (totalClasses.length / _classesPerPage).ceil();
 
-    // Lấy danh sách lớp cho trang hiện tại
-    final currentPageClasses = totalClasses.skip(_currentPage * _classesPerPage).take(_classesPerPage).toList();
+    final totalPages = (filteredClasses.length / _classesPerPage).ceil();
+    final currentPageClasses = filteredClasses
+        .skip(_currentPage * _classesPerPage)
+        .take(_classesPerPage)
+        .toList();
 
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
@@ -83,6 +94,7 @@ class _OpenClassState extends State<OpenClass> {
                       DropdownMenuItem(value: "ACTIVE", child: Text("ACTIVE")),
                       DropdownMenuItem(value: "COMPLETED", child: Text("COMPLETED")),
                       DropdownMenuItem(value: "UPCOMING", child: Text("UPCOMING")),
+                      DropdownMenuItem(value: null, child: Text("No Select")),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -105,6 +117,7 @@ class _OpenClassState extends State<OpenClass> {
                       DropdownMenuItem(value: "LT", child: Text("LT")),
                       DropdownMenuItem(value: "BT", child: Text("BT")),
                       DropdownMenuItem(value: "LT_BT", child: Text("LT_BT")),
+                      DropdownMenuItem(value: null, child: Text("No Select")),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -123,7 +136,23 @@ class _OpenClassState extends State<OpenClass> {
 
             ElevatedButton(
               onPressed: () {
-                classProvider.getOpenClass(context, _idController.text, _selectedStatus, _nameController.text, _selectedType);
+                setState(() {
+                String idFilter = _idController.text.trim();
+                String nameFilter = _nameController.text.trim();
+                // Lọc danh sách
+                filteredClasses = classProvider.openClasss.where((classItem) {
+                  // Kiểm tra từng điều kiện
+                  final matchId = idFilter.isEmpty || (classItem.classId?.contains(idFilter) ?? false);
+                  final matchName = nameFilter.isEmpty || (classItem.className?.contains(nameFilter)??false);
+                  final matchStatus = _selectedStatus == null || classItem.status == _selectedStatus;
+                  final matchType = _selectedType == null || classItem.classType == _selectedType;
+
+                  // Trả về true nếu tất cả điều kiện đều khớp
+                  return matchId && matchName && matchStatus && matchType;
+                }).toList();
+                print(filteredClasses);
+                _currentPage = 0;
+                });
               },
               child: Text('Tìm kiếm'),
             ),

@@ -105,7 +105,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                     return _buildClassRow(
                       classInfo.classId!,
                       classInfo.className!,
-                      classInfo.classType!,
+                      classInfo.status!,
                       index,
                       isChecked// Truyền index vào hàm
                     );

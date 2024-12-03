@@ -33,7 +33,7 @@ class _StudentSubmissionState extends State<StudentSubmission> {
     final surveyProvider = Provider.of<SurveyProvider>(context);
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
-      body: Padding(
+      body:surveyProvider.isLoading?Center(child: CircularProgressIndicator()): Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Center(

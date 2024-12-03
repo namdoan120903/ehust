@@ -65,7 +65,7 @@ class MaterialProvider with ChangeNotifier {
         notifyListeners();
         Navigator.pop(context);
       } else {
-        print(responseBody.body);
+        _showSuccessSnackbar(context, "Có lỗi xảy ra khi tải tài liệu lên, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print(e.toString());
@@ -169,7 +169,7 @@ class MaterialProvider with ChangeNotifier {
         notifyListeners();
         Navigator.pop(context);
       } else {
-        print(responseBody.body);
+        _showSuccessSnackbar(context, "Có lỗi xảy ra khi tải tài liệu lên, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print(e.toString());

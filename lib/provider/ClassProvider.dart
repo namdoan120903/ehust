@@ -237,6 +237,7 @@ class ClassProvider with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
+      print(response.body);
       if (response.statusCode == 200) {
           _showSuccessSnackbar(context, "Đăng kí danh sách lớp thành công", Colors.green);
           registerClass = [];
@@ -257,6 +258,8 @@ class ClassProvider with ChangeNotifier {
       "token": token,
       "class_id": classId,
     };
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_class_info'),
@@ -275,6 +278,8 @@ class ClassProvider with ChangeNotifier {
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
     }
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> getOpenClass(BuildContext context, String? classId, String? status, String? name, String? type)async{

@@ -19,7 +19,7 @@ class _ClassInfoState extends State<ClassInfo> {
     Class? classModel = classProvider.getClassLecturer;
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST"),
-      body: ListView(
+      body:classProvider.isLoading?Center(child: CircularProgressIndicator()): ListView(
             padding: EdgeInsets.all(16.0),
             children: [
               // Thông tin lớp học

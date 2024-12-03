@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/model/Class.dart';
 import 'package:project/provider/SurveyProvider.dart';
 import 'package:project/screens/lecturer/create_survey.dart';
+import 'package:project/screens/lecturer/edit_survey.dart';
 import 'package:project/screens/lecturer/survey_class_list.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
@@ -120,7 +121,7 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
-
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>EditSurvey(survey: assignment, index: index,)));
                           }
                         ),
                         IconButton(
