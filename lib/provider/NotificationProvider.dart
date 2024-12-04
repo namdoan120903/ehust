@@ -17,9 +17,14 @@ class NotificationProvider with ChangeNotifier {
   List<Map<String, dynamic>> get notifications => _notifications;
   bool get isLoading => _isLoading;
 
+  NotificationProvider() {
+    getUnreadNotificationCount();
+  }
+
   // Fetch notifications (get_notifications API)
-  Future<void> fetchNotifications({int index = 0, int count = 10}) async {
+  Future<void> fetchNotifications({int index = 0, int count = 9}) async {
     _isLoading = true;
+    if (index == 0) _notifications = [];
     notifyListeners();
     token = await secureStorage.read(key: 'token');
     print("Start get notifications");
@@ -37,7 +42,7 @@ class NotificationProvider with ChangeNotifier {
         final data = json.decode(response.body);
         print("data: " + data.toString());
         if (data['data'] != null) {
-          _notifications = List<Map<String, dynamic>>.from(data['data']);
+          _notifications.addAll(List<Map<String, dynamic>>.from(data['data']));
         }
       } else {
         print("Failed to fetch notifications: ${response.body}");
@@ -59,21 +64,22 @@ class NotificationProvider with ChangeNotifier {
             "token": token,
             "notification_ids": notificationIds
           }).toString());
-      final response = await http.post(
-        Uri.parse('${Constant.baseUrl}/it5023e/mark_notification_as_read'),
-        headers: {"Content-Type": "application/json"},
-        body:
-            json.encode({"token": token, "notification_ids": notificationIds}),
-      );
+      for (int id in notificationIds) {
+        final response = await http.post(
+          Uri.parse('${Constant.baseUrl}/it5023e/mark_notification_as_read'),
+          headers: {"Content-Type": "application/json"},
+          body: json.encode({"token": token, "notification_id": id}),
+        );
 
-      print("response.statusCode " + response.statusCode.toString());
+        print("response.statusCode " + response.statusCode.toString());
 
-      if (response.statusCode == 200) {
-        // After successfully marking as read, reload the unread count
-        await getUnreadNotificationCount();
-        notifyListeners();
-      } else {
-        print("Failed to mark notifications as read: ${response.body}");
+        if (response.statusCode == 200) {
+          // After successfully marking as read, reload the unread count
+          await getUnreadNotificationCount();
+          notifyListeners();
+        } else {
+          print("Failed to mark notifications as read: ${response.body}");
+        }
       }
     } catch (error) {
       print("Error marking notifications as read: $error");

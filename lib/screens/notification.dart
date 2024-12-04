@@ -18,21 +18,37 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   List<int> readNotificationIds = []; // Track IDs of read notifications
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
-  final int _count = 10;
+  final int _count = 9;
   bool _isFetchingMore = false;
+
+  late NotificationProvider _notificationProvider;
 
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<NotificationProvider>(context, listen: false);
-    provider.fetchNotifications(index: _currentIndex, count: _count);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notificationProvider =
+          Provider.of<NotificationProvider>(context, listen: false);
+      notificationProvider.fetchNotifications();
+    });
 
     // Attach scroll listener
     _scrollController.addListener(_onScroll);
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Store the reference to NotificationProvider
+    _notificationProvider =
+        Provider.of<NotificationProvider>(context, listen: false);
+  }
+
+  @override
   void dispose() {
+    if (readNotificationIds.isNotEmpty) {
+      _notificationProvider.markAsRead(readNotificationIds);
+    }
     _scrollController.dispose();
     super.dispose();
   }

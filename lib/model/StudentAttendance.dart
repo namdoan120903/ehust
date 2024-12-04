@@ -2,7 +2,7 @@ class StudentAttendance {
   final String id;
   final String name;
   final String accountId;
-  String attendanceStatus = "NOT_ABSENCE";
+  String attendanceStatus = "PRESENT";
 
   StudentAttendance({
     required this.accountId,

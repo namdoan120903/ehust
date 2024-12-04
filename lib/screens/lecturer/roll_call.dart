@@ -16,45 +16,40 @@ class _RollCallScreenState extends State<RollCallScreen> {
   String currentDate =
       DateFormat('dd/MM/yyyy').format(DateTime.now()); // Get the current date
   String classId = ''; // Default empty string
+  late List<StudentAttendance> students = []; // Stateful list for attendance
 
-  late List<StudentAccount> studentAccounts; // Declare studentAccounts here
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     // Retrieve classId from the arguments passed through the route
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args != null) {
-      classId = args.toString();
-    } else {
-      classId = ''; // Default value if no classId is passed
-    }
+    classId = args?.toString() ?? '';
 
-    // Now call getClassInfoLecturer after classId has been set
-    final classProvider = Provider.of<ClassProvider>(context, listen: false);
-
-    // Only fetch the class info if classId is not empty
     if (classId.isNotEmpty) {
+      final classProvider = Provider.of<ClassProvider>(context, listen: false);
+
+      // Fetch class info for the lecturer
       classProvider.getClassInfoLecturer(context, classId);
+
+      // Populate the students list if data is available
       if (classProvider.getClassLecturer?.studentAccounts != null) {
-        studentAccounts = classProvider.getClassLecturer!.studentAccounts!;
-      } else {
-        studentAccounts = [];
+        students =
+            classProvider.getClassLecturer!.studentAccounts!.map((student) {
+          return StudentAttendance(
+            id: student.studentId ?? "",
+            name: "${student.lastName ?? ""} ${student.firstName ?? ""}".trim(),
+            accountId: student.accountId ?? "",
+          );
+        }).toList();
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the RollCallProvider
     final rollCallProvider = Provider.of<RollCallProvider>(context);
-    List<StudentAttendance> students = studentAccounts.map((student) {
-      return StudentAttendance(
-        id: student.studentId ?? "",
-        name: "${student.lastName ?? ""} ${student.firstName ?? ""}".trim(),
-        accountId: student.accountId ?? "",
-      );
-    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -77,7 +72,7 @@ class _RollCallScreenState extends State<RollCallScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Ngày điểm danh: "),
+                const Text("Ngày điểm danh: "),
                 Text(currentDate,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
@@ -88,10 +83,10 @@ class _RollCallScreenState extends State<RollCallScreen> {
                 children: [
                   Table(
                     border: TableBorder.all(color: Colors.black),
-                    columnWidths: {
-                      0: const FractionColumnWidth(0.3), // ID column
-                      1: const FractionColumnWidth(0.5), // Name column
-                      3: const FractionColumnWidth(0.2), // Attendance column
+                    columnWidths: const {
+                      0: FractionColumnWidth(0.3), // ID column
+                      1: FractionColumnWidth(0.5), // Name column
+                      3: FractionColumnWidth(0.2), // Attendance column
                     },
                     children: [
                       // Table headers
@@ -130,7 +125,7 @@ class _RollCallScreenState extends State<RollCallScreen> {
                             child: Center(
                               child: Padding(
                                 padding: EdgeInsets.all(8),
-                                child: Text("Vắng",
+                                child: Text("Trạng thái",
                                     textAlign: TextAlign.center,
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
@@ -173,39 +168,24 @@ class _RollCallScreenState extends State<RollCallScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: GestureDetector(
                                     onTap: () {
-                                      print("before student.attendanceStatus " +
-                                          student.attendanceStatus.toString());
                                       setState(() {
-                                        // Find the student by their id and toggle their attendance status
-                                        int studentIndex = students.indexWhere(
-                                            (s) => s.id == student.id);
-                                        if (studentIndex != -1) {
-                                          // Toggle the attendance status
-                                          if (students[studentIndex]
-                                                  .attendanceStatus ==
-                                              'ABSENCE') {
-                                            students[studentIndex]
-                                                    .attendanceStatus =
-                                                'NOT_ABSENCE';
-                                          } else {
-                                            students[studentIndex]
-                                                .attendanceStatus = 'ABSENCE';
-                                          }
+                                        // Toggle attendance status
+                                        if (student.attendanceStatus ==
+                                            'ABSENCE') {
+                                          student.attendanceStatus = 'PRESENT';
+                                        } else {
+                                          student.attendanceStatus = 'ABSENCE';
                                         }
-                                        print(
-                                            "after student.attendanceStatus " +
-                                                student.attendanceStatus
-                                                    .toString());
                                       });
                                     },
                                     child: Icon(
-                                      student.attendanceStatus == 'NOT_ABSENCE'
+                                      student.attendanceStatus == 'PRESENT'
                                           ? Icons.check_circle
                                           : Icons.cancel,
-                                      color: student.attendanceStatus ==
-                                              'NOT_ABSENCE'
-                                          ? Colors.green
-                                          : Colors.red,
+                                      color:
+                                          student.attendanceStatus == 'PRESENT'
+                                              ? Colors.green
+                                              : Colors.red,
                                     ),
                                   ),
                                 ),
@@ -225,16 +205,15 @@ class _RollCallScreenState extends State<RollCallScreen> {
                 // Collect the absent student IDs
                 List<String> absentStudentIds = students
                     .where((student) =>
-                        student.attendanceStatus ==
-                        'ABSENCE') // Filter for ABSENCE status
-                    .map((student) =>
-                        student.accountId.toString()) // Extract the student IDs
+                        student.attendanceStatus == 'ABSENCE') // Filter ABSENCE
+                    .map((student) => student.accountId.toString())
                     .toList();
                 print("absentStudentIds: " + absentStudentIds.toString());
 
                 // Call the API to take attendance
                 rollCallProvider.takeAttendance(
                     classId, currentDate, absentStudentIds);
+                Navigator.pop(context);
               },
               width: 0.3,
               height: 0.06,
