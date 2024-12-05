@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:project/screens/student/student_class.dart';
 import 'package:provider/provider.dart';
+import '../messenger_page.dart';
+
 
 import '../../provider/AuthProvider.dart';
 import '../../provider/ClassProvider.dart';
@@ -101,7 +103,11 @@ class _StudentHomeState extends State<StudentHome> {
             ),
             GestureDetector(
               onTap: () {
-                // Xử lý khi bấm nút Chat
+                // Chuyển sang MessengerPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MessengerPage()),
+                );
                 print('Chat được bấm');
               },
               child: Column(
