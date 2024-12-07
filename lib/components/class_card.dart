@@ -39,6 +39,7 @@ class ClassCard extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     if (userRole == 'STUDENT') {
+                      // If the user is a student, fetch the attendance record
                       await rollCallProvider.getAttendanceRecord(classId);
                       Navigator.push(
                         context,
@@ -48,13 +49,25 @@ class ClassCard extends StatelessWidget {
                         ),
                       );
                     } else if (userRole == 'LECTURER') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              LecturerAttendancePage(classId: classId),
-                        ),
-                      );
+                      // If the user is a lecturer, call fetchAttendanceDates and pass the result
+                      try {
+                        List<String> attendanceDates = await rollCallProvider
+                            .fetchAttendanceDates(classId);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => LecturerAttendancePage(
+                              classId: classId,
+                              attendanceList:
+                                  attendanceDates, // Pass the list of dates
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        // Handle error (if any)
+                        print("Error fetching attendance dates: $e");
+                        // Optionally show a message or dialog if fetching fails
+                      }
                     }
                   },
                   child: const Text('View'),

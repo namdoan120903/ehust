@@ -89,7 +89,7 @@ class NotificationProvider with ChangeNotifier {
   // Fetch unread notification count
   Future<void> getUnreadNotificationCount() async {
     token = await secureStorage.read(key: 'token');
-
+    unreadCount = 0;
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_unread_notification_count'),
@@ -113,15 +113,11 @@ class NotificationProvider with ChangeNotifier {
   // Send notification (send_notification API)
   Future<void> sendNotification({
     required String message,
-    required String userName,
+    required String toUser,
     required String type,
     File? image, // Optional image file
   }) async {
     String? token = await secureStorage.read(key: 'token');
-    final results = await authProvider.searchAccount(userName);
-    List<Map<String, dynamic>> searchResults = results;
-    int toUser = searchResults[0]["account_id"];
-
     print("Start sending notification...");
     print("Token: $token");
     print("Message: $message");
@@ -136,7 +132,7 @@ class NotificationProvider with ChangeNotifier {
       // Add fields
       request.fields['token'] = token ?? '';
       request.fields['message'] = message;
-      request.fields['toUser'] = toUser.toString();
+      request.fields['toUser'] = toUser;
       request.fields['type'] = type;
 
       // Add optional image if provided

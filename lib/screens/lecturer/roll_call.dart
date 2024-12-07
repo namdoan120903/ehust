@@ -4,6 +4,7 @@ import 'package:project/components/custom_button.dart'; // Your custom button wi
 import 'package:project/model/StudentAccount.dart'; // Ensure the path is correct
 import 'package:project/model/StudentAttendance.dart'; // Ensure the path is correct
 import 'package:project/provider/ClassProvider.dart'; // Ensure the path is correct
+import 'package:project/provider/NotificationProvider.dart';
 import 'package:project/provider/RollCallProvider.dart'; // Ensure the path is correct
 import 'package:provider/provider.dart'; // Provider package
 
@@ -213,6 +214,14 @@ class _RollCallScreenState extends State<RollCallScreen> {
                 // Call the API to take attendance
                 rollCallProvider.takeAttendance(
                     classId, currentDate, absentStudentIds);
+                final notificationProvider =
+                    Provider.of<NotificationProvider>(context, listen: false);
+                for (String id in absentStudentIds) {
+                  notificationProvider.sendNotification(
+                      message: "Thông báo vắng mặt",
+                      toUser: id,
+                      type: "ABSENCE");
+                }
                 Navigator.pop(context);
               },
               width: 0.3,
