@@ -1,12 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatPage extends StatefulWidget {
   final String username;
   final String avatar;
 
-  ChatPage({required this.username, required this.avatar});
+  const ChatPage({Key? key, required this.username, required this.avatar}) : super(key: key);
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -14,42 +16,98 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
-  List<Map<String, dynamic>> _messages = []; // Danh sách các tin nhắn
-  late ImagePicker _imagePicker;  // Khởi tạo ImagePicker
-  File? _image;  // Biến để lưu ảnh chọn
+  List<Map<String, dynamic>> _messages = [];
+  late WebSocketChannel _channel;
+  late String _channelUrl;
+
+  // Danh sách hội thoại
+  List<dynamic> _conversations = [];
+  bool _isLoadingConversations = true;
 
   @override
   void initState() {
     super.initState();
-    _imagePicker = ImagePicker();  // Khởi tạo đối tượng ImagePicker
+    _channelUrl = 'wss://your-websocket-server-url';
+    _connectWebSocket();
+    _fetchConversations(); // Gọi API lấy danh sách hội thoại
   }
 
-  // Hàm gửi tin nhắn
+  // Hàm gọi API lấy danh sách hội thoại
+  Future<void> _fetchConversations() async {
+    final String apiUrl = 'https://your-backend-url.com/it5023e/get_list_conversation';
+    final body = jsonEncode({
+      "token": "h76N0F", // Thay bằng token thực tế
+      "index": 0,
+      "count": 10
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _conversations = data['data'];
+          _isLoadingConversations = false;
+        });
+      } else {
+        throw Exception('Lỗi API: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingConversations = false;
+      });
+      print('Lỗi khi gọi API: $e');
+    }
+  }
+
+  // Kết nối WebSocket
+  void _connectWebSocket() {
+    _channel = WebSocketChannel.connect(
+      Uri.parse(_channelUrl),
+    );
+
+    _channel.stream.listen((message) {
+      setState(() {
+        _messages.add({
+          'text': message,
+          'isMe': false,
+        });
+      });
+    });
+  }
+
+  // Gửi tin nhắn qua WebSocket
   void _sendMessage() {
     if (_messageController.text.isNotEmpty) {
+      _channel.sink.add(_messageController.text);
       setState(() {
         _messages.add({
           'text': _messageController.text,
-          'isMe': true, // Tin nhắn của người dùng
+          'isMe': true,
         });
       });
-      _messageController.clear(); // Xóa ô nhập sau khi gửi
+      _messageController.clear();
     }
   }
 
-  // Hàm chụp ảnh
+  // Chọn ảnh từ thiết bị
   Future<void> _pickImage() async {
-    final XFile? image = await _imagePicker.pickImage(source: ImageSource.camera); // Chụp ảnh
-    if (image != null) {
-      setState(() {
-        _image = File(image.path); // Lưu ảnh vào biến _image
-        _messages.add({
-          'text': 'Đã gửi ảnh', // Tin nhắn dạng ảnh
-          'isMe': true, // Tin nhắn của người dùng
-          'image': _image!.path, // Đính kèm ảnh
-        });
-      });
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      print('Picked image: ${pickedFile.path}');
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _channel.sink.close();
   }
 
   @override
@@ -58,9 +116,7 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(widget.avatar),
-            ),
+            CircleAvatar(backgroundImage: NetworkImage(widget.avatar)),
             SizedBox(width: 10),
             Text(widget.username),
           ],
@@ -68,60 +124,46 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
         children: [
-          // Danh sách tin nhắn
           Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
+            child: _isLoadingConversations
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+              itemCount: _conversations.length,
               itemBuilder: (context, index) {
-                final message = _messages[index];
-                return Align(
-                  alignment: message['isMe'] ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: message['isMe'] ? Colors.blue[200] : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: message['isMe'] ? Colors.blue : Colors.grey, // Viền khác nhau cho mỗi tin nhắn
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 5),
-                          message['image'] != null // Nếu có ảnh
-                              ? Image.file(File(message['image']))
-                              : Text(
-                            message['text']!,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
+                final conversation = _conversations[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(conversation['partner']['avatar']),
+                  ),
+                  title: Text(conversation['partner']['name']),
+                  subtitle: Text(
+                    conversation['lastMessage'],
+                    style: TextStyle(
+                      fontWeight: conversation['numNewMessage'] > 0 ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
+                  trailing: conversation['numNewMessage'] > 0
+                      ? CircleAvatar(
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      '${conversation['numNewMessage']}',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                      : null,
+                  onTap: () {
+                    print('Chọn hội thoại: ${conversation['id']}');
+                  },
                 );
               },
             ),
           ),
-
-          // Phần nhập tin nhắn
+          Divider(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                IconButton(
-                  icon: Icon(Icons.add_circle_sharp),
-                  onPressed: () {
-                    // Thêm chức năng gửi file
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.camera_alt),
-                  onPressed: _pickImage, // Chụp ảnh khi nhấn vào nút camera
-                ),
+                IconButton(icon: Icon(Icons.add_circle_sharp), onPressed: _pickImage),
                 Expanded(
                   child: TextField(
                     controller: _messageController,
@@ -131,20 +173,10 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _sendMessage, // Gửi tin nhắn
-                ),
+                IconButton(icon: Icon(Icons.send), onPressed: _sendMessage),
               ],
             ),
           ),
-
-          // Hiển thị ảnh đã chụp (nếu có)
-          if (_image != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.file(_image!), // Hiển thị ảnh đã chụp
-            ),
         ],
       ),
     );
