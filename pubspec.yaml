@@ -35,6 +35,8 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   file_picker: ^5.0.1
   webview_flutter: ^4.10.0
+  intl: ^0.18.0
+
 
 
   # The following adds the Cupertino Icons font to your application.

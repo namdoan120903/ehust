@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'StudentAccount.dart';
 
 class Class {
@@ -34,8 +36,10 @@ class Class {
     classType = json['class_type'];
     lecturerName = json['lecturer_name'];
     studentCount = json['student_count'];
-    startDate = json['start_date'];
-    endDate = json['end_date'];
+    DateTime parsedDate = DateTime.parse(json['start_date']);
+    startDate = DateFormat('dd/MM/yyyy').format(parsedDate);
+    DateTime parsedDate1 = DateTime.parse(json['end_date']);
+    endDate = DateFormat('dd/MM/yyyy').format(parsedDate);
     status = json['status'];
     if (json['student_accounts'] != null) {
       studentAccounts = <StudentAccount>[];
@@ -45,23 +49,6 @@ class Class {
     }
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['class_id'] = this.classId;
-    data['class_name'] = this.className;
-    data['attached_code'] = this.attachedCode;
-    data['class_type'] = this.classType;
-    data['lecturer_name'] = this.lecturerName;
-    data['student_count'] = this.studentCount;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['status'] = this.status;
-    if (this.studentAccounts != null) {
-      data['student_accounts'] =
-          this.studentAccounts!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

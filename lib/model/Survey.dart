@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Survey {
   int? id;
   String? title;
@@ -28,24 +30,10 @@ class Survey {
         ? int.tryParse(json['lecturer_id']) // Nếu là String thì chuyển sang int
         : json['lecturer_id'];
     deadline = json['deadline'];
-
     fileUrl = json['file_url'];
     classId = json['class_id'];
     is_submitted = json['is_submitted'];
     grade = json['grade'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['lecturer_id'] = this.lecturerId;
-    data['deadline'] = this.deadline;
-    data['file_url'] = this.fileUrl;
-    data['class_id'] = this.classId;
-    data['is_submitted'] = this.is_submitted;
-    data['grade'] = this.grade;
-    return data;
-  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/provider/AbsenceProvider.dart';
 import 'package:project/provider/AuthProvider.dart';
 import 'package:project/provider/ClassProvider.dart';
 import 'package:project/provider/MaterialProvider.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_)=>ClassProvider()),
       ChangeNotifierProvider(create: (_)=>SurveyProvider()),
       ChangeNotifierProvider(create: (_)=>MaterialProvider()),
+      ChangeNotifierProvider(create: (_)=>AbsenceProvider()),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,

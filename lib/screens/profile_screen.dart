@@ -44,17 +44,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     authProvider.user.avatar != null &&
                             authProvider.user.avatar != ""
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                20), // Tạo viền bo với bán kính 20
-                            child: Image.network(
-                              'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
-                              width: 150,
-                              height: 150,
-                              fit:
-                                  BoxFit.cover, // Cắt ảnh để vừa với kích thước
-                            ),
-                          )
+                        ?ClipRRect(
+                      borderRadius: BorderRadius.circular(20), // Tạo viền bo với bán kính 20
+                      child: Image.network(
+                        'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
+                        errorBuilder: (context, error, stackTrace) {
+                          // Widget thay thế khi lỗi
+                          return SizedBox.shrink(); // Widget rỗng
+                        },
+                      ),
+                    )
                         : Container(
                             width: 150,
                             height: 150,

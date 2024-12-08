@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/screens/student/student_submission.dart';
 import 'package:project/screens/student/student_submit_survey.dart';
 import 'package:provider/provider.dart';
@@ -128,8 +129,15 @@ class SurveyList extends StatelessWidget {
         return Card(
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: ListTile(
-            title: Text('${assignment.title!} - ${assignment.classId} - ${assignment.deadline}'),
-            subtitle:Text(assignment.description!),
+            title:
+                Text('${assignment.title!} - ${assignment.classId} '),
+            subtitle:Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(assignment.description!),
+                Text('Thời hạn nộp bài: ${DateFormat('HH:mm - dd/MM/yyyy').format(DateTime.parse(assignment.deadline!))}'),
+              ],
+            ),
             onTap: () {
               if(submit == false && expired == false){
               Navigator.push(
