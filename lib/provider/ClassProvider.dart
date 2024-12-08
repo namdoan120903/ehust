@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +69,7 @@ class ClassProvider with ChangeNotifier {
       "end_date": end,
       "max_student_amount": amount
     };
+    print(requestBody);
     isLoading = true;
     notifyListeners();
     try {
@@ -78,6 +78,7 @@ class ClassProvider with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
+      String code = jsonDecode(response.body)['data'];
       print(response.body);
       if (response.statusCode == 200) {
         Class newClass = Class.fromJson(json.decode(response.body)['data']);
