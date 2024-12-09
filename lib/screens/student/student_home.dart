@@ -63,13 +63,13 @@ class _StudentHomeState extends State<StudentHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${authProvider.user.ho} ${authProvider.user.ten}',
+                      '${authProvider.user.ho} ${authProvider.user.ten} | Student',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    Text('Student')
+                    Text('Khoa hoc may tinh')
                   ],
-                ),
+                )
               ],
             ),
           ),
@@ -85,7 +85,7 @@ class _StudentHomeState extends State<StudentHome> {
                 _buildMenuItem(Icons.add, 'Đăng kí', 'Đăng kí lớp học', context,
                     '/student/class/register'),
                 _buildMenuItem(Icons.folder, 'Tài liệu',
-                    'Tài liệu của lớp học, môn học', context, 'document'),
+                    'Tài liệu của lớp học, môn học', context, 'material'),
                 _buildMenuItem(Icons.assignment, 'Bài tập',
                     'Thông tin bài tập môn học', context, '/student/survey'),
                 _buildMenuItem(Icons.note, 'Nghỉ phép',
@@ -96,6 +96,54 @@ class _StudentHomeState extends State<StudentHome> {
             ),
           )
         ],
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "/student");
+                print('Trang chủ được bấm');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.home, size: 30, color: Colors.red),
+                  Text('Trang chủ', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                // Xử lý khi bấm nút Chat
+                print('Chat được bấm');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.chat, size: 30, color: Colors.red),
+                  Text('Chat', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "/profile");
+                print('Profile được bấm');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.person, size: 30, color: Colors.red),
+                  Text('Profile', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

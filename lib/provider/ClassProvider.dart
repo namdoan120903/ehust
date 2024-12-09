@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,7 @@ class ClassProvider with ChangeNotifier {
   List<Class> classes = [];
   List<Class> registerClass = [];
   Class? getClassLecturer;
+  List<Class> openClasss = [];
 
   Future<void> createClass(
       BuildContext context,
@@ -66,7 +68,6 @@ class ClassProvider with ChangeNotifier {
       "end_date": end,
       "max_student_amount": amount
     };
-    print(requestBody);
     isLoading = true;
     notifyListeners();
     try {
@@ -75,15 +76,16 @@ class ClassProvider with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
-      String code = jsonDecode(response.body)['data'];
       print(response.body);
       if (response.statusCode == 200) {
         Class newClass = Class.fromJson(json.decode(response.body)['data']);
+        print(newClass);
         classes.add(newClass);
         _showSuccessSnackbar(
             context, "Tạo lớp học mới thành công", Colors.green);
+        Navigator.pop(context);
         notifyListeners();
-      } else if (code == "class id already exists") {
+      } else if (response.statusCode == 400) {
         _showSuccessSnackbar(context, "Mã lớp đã tồn tại", Colors.red);
       } else {
         _showSuccessSnackbar(
@@ -146,8 +148,10 @@ class ClassProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         classes[selectedId] =
             Class.fromJson(json.decode(response.body)['data']);
-        _showErrorDialog(context, "Cap nhat lớp học thành công");
-        print("lay du lieu thanh cong");
+        _showSuccessSnackbar(
+            context, "Cập nhật lớp học thành công", Colors.green);
+        print(response.body);
+        Navigator.pop(context);
         notifyListeners();
       } else {
         _showErrorDialog(context, response.body.toString());
@@ -172,10 +176,12 @@ class ClassProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         classes.removeAt(index);
-        _showErrorDialog(context, "Xoa lớp học thành công");
+        _showSuccessSnackbar(context, "Xóa lớp học thành công", Colors.green);
         notifyListeners();
+        Navigator.pop(context);
       } else {
-        _showErrorDialog(context, response.body.toString());
+        _showSuccessSnackbar(
+            context, "Có lỗi xảy ra, không thể xóa lớp", Colors.red);
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
@@ -207,7 +213,8 @@ class ClassProvider with ChangeNotifier {
         }
         notifyListeners();
       } else if (response.statusCode == 400) {
-        _showErrorDialog(context, "Khong ton tai lop nay");
+        _showSuccessSnackbar(
+            context, "Không tồn tại lớp có mã này", Colors.red);
       } else {
         _showErrorDialog(context, response.body.toString());
       }
@@ -240,9 +247,12 @@ class ClassProvider with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
+      print(response.body);
       if (response.statusCode == 200) {
-        _showErrorDialog(context, "Dang ki lop thanh cong");
+        _showSuccessSnackbar(
+            context, "Đăng kí danh sách lớp thành công", Colors.green);
         registerClass = [];
+        get_class_list(context);
         notifyListeners();
       } else {
         _showErrorDialog(context, response.body.toString());
@@ -259,6 +269,8 @@ class ClassProvider with ChangeNotifier {
       "token": token,
       "class_id": classId,
     };
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_class_info'),
@@ -268,9 +280,47 @@ class ClassProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes);
         getClassLecturer = Class.fromJson(json.decode(responseBody)['data']);
+        print(getClassLecturer);
         notifyListeners();
       } else {
         _showErrorDialog(context, response.body.toString());
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> getOpenClass(BuildContext context, String? classId,
+      String? status, String? name, String? type) async {
+    token = await secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "class_id": classId!.isEmpty ? null : classId,
+      "status": status, //ACTIVE, COMPLETED, UPCOMING
+      "class_name": name!.isEmpty ? null : name,
+      "class_type": type
+    };
+    print(requestBody);
+    try {
+      final response = await http.post(
+        Uri.parse('${Constant.baseUrl}/it5023e/get_classes_by_filter'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonData = json.decode(responseBody)['data'];
+
+        openClasss = (jsonData['page_content'] as List)
+            .map((classJson) => Class.fromJson(classJson))
+            .toList();
+        notifyListeners();
+      } else {
+        print(response.body);
+        _showSuccessSnackbar(
+            context, "Không lấy được dữ liệu lớp mo", Colors.red);
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:project/model/Class.dart';
 import 'package:project/provider/SurveyProvider.dart';
 import 'package:project/screens/lecturer/create_survey.dart';
+import 'package:project/screens/lecturer/edit_survey.dart';
+import 'package:project/screens/lecturer/survey_class_list.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +23,36 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
     // Lấy instance của ClassProvider mà không lắng nghe các thay đổi
     final surveyProvider = Provider.of<SurveyProvider>(context, listen: false);
     surveyProvider.getAllSurvey(context, widget.classA.classId!);
-    print(surveyProvider.surveys.toString());
+  }
+
+  void _showDeleteDialog(BuildContext context,SurveyProvider surveyProvider, String id, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Xác Nhận Xóa'),
+          content: Text('Bạn có chắc chắn muốn xóa mục này không?'),
+          actions: [
+            // Nút "Không"
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+              },
+              child: Text('Không'),
+            ),
+            // Nút "Có"
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+                surveyProvider.deleteSurvey(context, id, index);
+                print('Mục đã bị xóa');
+              },
+              child: Text('Có'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
 
@@ -70,6 +101,8 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     onTap: (){
+                      print(assignment.id);
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SurveyClassList(survey: assignment)));
                     },
                     title: Text('${assignment.title!} - ${assignment.classId}'),
                     subtitle: Column(
@@ -88,14 +121,13 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
-
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>EditSurvey(survey: assignment, index: index,)));
                           }
                         ),
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
-                            print(assignment.id);
-                            surveyProvider.deleteSurvey(context, assignment.id!, index);
+                            _showDeleteDialog(context, surveyProvider,assignment.id!.toString(),index);
                           }
                         ),
                       ],

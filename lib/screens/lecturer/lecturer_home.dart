@@ -40,10 +40,20 @@ class _LecturerHomeState extends State<LecturerHome> {
               },
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.red,
-                    radius: 30,
-                  ),
+                  authProvider.user.avatar != null &&
+                          authProvider.user.avatar != ""
+                      ? ClipOval(
+                          child: Image.network(
+                            'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
+                            width: 65,
+                            height: 65,
+                            fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
+                          ),
+                        )
+                      : CircleAvatar(
+                          backgroundColor: Colors.red,
+                          radius: 30,
+                        ),
                   SizedBox(
                     width: 10,
                   ),
@@ -73,22 +83,66 @@ class _LecturerHomeState extends State<LecturerHome> {
                     'Thông tin các lớp học của sinh viên', context, "class"),
                 _buildMenuItem(Icons.add, 'Tạo lớp học', 'Tạo lớp học mới',
                     context, "/lecturer/class"),
-                _buildMenuItem(
-                    Icons.folder,
-                    'Tài liệu',
-                    'Tài liệu của lớp học, môn học',
-                    context,
-                    "lecturer/send_notification"),
+                _buildMenuItem(Icons.folder, 'Tài liệu',
+                    'Tài liệu của lớp học, môn học', context, "material"),
                 _buildMenuItem(Icons.assignment, 'Bài tập',
                     'Thông tin bài tập môn học', context, "survey"),
-                _buildMenuItem(Icons.note, 'Nhập điểm',
-                    'Giảng viên nhập điểm cho sinh viên', context, "score"),
+                _buildMenuItem(Icons.note, 'Nghỉ học', 'Kiểm tra đơn nghỉ học',
+                    context, "absence"),
                 _buildMenuItem(Icons.check, 'Điểm danh',
                     'Điểm danh các lớp học', context, "attendance"),
               ],
             ),
           )
         ],
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "/lecturer");
+                print('Trang chủ được bấm');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.home, size: 30, color: Colors.red),
+                  Text('Trang chủ', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                // Xử lý khi bấm nút Chat
+                print('Chat được bấm');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.chat, size: 30, color: Colors.red),
+                  Text('Chat', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "/profile");
+                print('Profile được bấm');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.person, size: 30, color: Colors.red),
+                  Text('Profile', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

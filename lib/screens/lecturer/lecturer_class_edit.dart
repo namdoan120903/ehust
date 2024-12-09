@@ -13,6 +13,10 @@ class LecturerEditClass extends StatefulWidget {
 class _LecturerCreateClassState extends State<LecturerEditClass> {
   DateTime? startDate;
   DateTime? endDate;
+  String selectedClassType = 'ACTIVE'; // Giá trị mặc định
+  List<String> items = ['ACTIVE', 'COMPLETED', 'UPCOMING'];
+  TextEditingController startDateController = TextEditingController();
+ TextEditingController endDateController =TextEditingController();
 
   void _showDeleteDialog(BuildContext context,ClassProvider classProvider, String classId, int index) {
     showDialog(
@@ -55,9 +59,12 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     final TextEditingController classIdController =
         TextEditingController(text: classEdit.classId);
     final TextEditingController classNameController =
-        TextEditingController(text: classEdit.className);
-    final TextEditingController statusController =
-        TextEditingController(text: classEdit.status);
+        TextEditingController(text: classEdit.startDate);
+     startDateController =
+     TextEditingController(text: classEdit.startDate);
+      endDateController =
+     TextEditingController(text: classEdit.endDate);
+
     return Scaffold(
         appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
         body: Padding(
@@ -82,7 +89,12 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                   SizedBox(height: 8),
                   _buildTextField(classNameController, 'Tên lớp'),
                   SizedBox(height: 8),
-                  _buildTextField(statusController, 'Trạng thái'),
+                  _buildDropdown(selectedClassType, items, (newValue) {
+                    setState(() {
+                      selectedClassType = newValue!;
+                      print(selectedClassType);
+                    });
+                  }, 'Trạng thái lớp'),
                   SizedBox(height: 8),
                   _buildDatePicker(context, 'Ngày bắt đầu', true),
                   SizedBox(height: 8),
@@ -97,12 +109,13 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                         flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
+                            print(selectedClassType);
                             classProvider.updateClass(
                                 context,
                                 selectedClassId!,
                                 classIdController.text,
                                 classNameController.text,
-                                statusController.text,
+                                selectedClassType,
                                 startDate == null
                                     ? classEdit.startDate!
                                     : startDate.toString().substring(0, 10),
@@ -159,8 +172,28 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     );
   }
 
+  Widget _buildDropdown(String selectedValue, List<String> items, ValueChanged<String?> onChanged, String label) {
+    return DropdownButtonFormField<String>(
+      value: selectedValue,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
   Widget _buildDatePicker(
-      BuildContext context, String label, bool isStartDate) {
+      BuildContext context, String label, bool isStartDate, ) {
     return TextField(
       readOnly: true,
       decoration: InputDecoration(
@@ -182,17 +215,17 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
         if (selectedDate != null) {
           setState(() {
             if (isStartDate) {
-              startDate = selectedDate;
+              startDateController.text = selectedDate.toLocal().toString().split(' ')[0];
             } else {
-              endDate = selectedDate;
+              endDateController.text = selectedDate.toLocal().toString().split(' ')[0];
             }
           });
         }
       },
       controller: TextEditingController(
           text: isStartDate
-              ? startDate?.toLocal().toString().split(' ')[0]
-              : endDate?.toLocal().toString().split(' ')[0]),
-    );
+              ? startDateController.text
+              : endDateController.text,
+    ));
 
 }}

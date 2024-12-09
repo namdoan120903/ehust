@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/screens/student/student_submission.dart';
 import 'package:project/screens/student/student_submit_survey.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,8 @@ class StudentSurvey extends StatefulWidget {
 
 class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  List<Survey> completedSurveys = [];
+  List<Survey> pendingSurveys = [];List<Survey> expiredSurveys = [];
 
   @override
   void initState() {
@@ -21,6 +24,8 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
     surveyProvider.get_survey_student(context);
     _tabController = TabController(length: 3, vsync: this);
   }
+
+
 
   @override
   void dispose() {
@@ -32,12 +37,25 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
   Widget build(BuildContext context) {
     final surveyProvider = Provider.of<SurveyProvider>(context);
 
-    List<Survey> completedSurveys =
-    surveyProvider.studentSurvey.where((assignment) => assignment.is_submitted!).toList();
-    List<Survey> incompleteSurveys =
-    surveyProvider.studentSurvey.where((assignment) => !assignment.is_submitted!).toList();
-    List<Survey> gradedSurveys =
-    completedSurveys.where((assignment) => assignment.grade != null).toList();
+    // Danh sách bài đã làm và còn hạn
+     completedSurveys = surveyProvider.studentSurvey
+        .where((assignment) =>
+    assignment.is_submitted! &&
+        DateTime.parse(assignment.deadline!).isAfter(DateTime.now()))
+        .toList();
+
+// Danh sách bài chưa làm và còn hạn
+     pendingSurveys = surveyProvider.studentSurvey
+        .where((assignment) =>
+    !assignment.is_submitted! &&
+        DateTime.parse(assignment.deadline!).isAfter(DateTime.now()))
+        .toList();
+
+// Danh sách bài đã hết hạn (bao gồm cả đã làm lẫn chưa làm)
+     expiredSurveys = surveyProvider.studentSurvey
+        .where((assignment) =>
+        DateTime.parse(assignment.deadline!).isBefore(DateTime.now()))
+        .toList();
 
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
@@ -59,7 +77,7 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
             tabs: [
               Tab(text: "Chưa làm"),
               Tab(text: "Đã làm"),
-              Tab(text: "Đã chấm điểm"),
+              Tab(text: "Hết hạn"),
             ],
           ),
           Expanded(
@@ -68,21 +86,21 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
               children: [
                 // Tab "Chưa làm"
                 SurveyList(
-                  items: incompleteSurveys,
-                  showGrade: false,
+                  items: pendingSurveys,
                   submit: false,
+                  view: false,
                 ),
                 // Tab "Đã làm"
                 SurveyList(
                   items: completedSurveys,
-                  showGrade: false,
                   submit: true,
+                  view: true,
                 ),
-                // Tab "Đã chấm điểm"
                 SurveyList(
-                  items: gradedSurveys,
-                  showGrade: true,
-                  submit: true,
+                  items: expiredSurveys,
+                  submit: false,
+                  view: false,
+                  expired: true,
                 ),
               ],
             ),
@@ -95,10 +113,11 @@ class _StudentSurveyState extends State<StudentSurvey> with SingleTickerProvider
 
 class SurveyList extends StatelessWidget {
   final List<Survey> items;
-  final bool showGrade;
   final bool submit;
+  final bool view;
+  final bool expired;
 
-  SurveyList({required this.items, this.showGrade = false, required this.submit});
+  SurveyList({required this.items, required this.submit, required this.view, this.expired = false});
 
   @override
   Widget build(BuildContext context) {
@@ -110,17 +129,17 @@ class SurveyList extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: ListTile(
             title: Text('${assignment.title!} - ${assignment.classId} - ${assignment.deadline}'),
-            subtitle: showGrade
-                ? Text('Điểm: ${assignment.grade}, ${assignment.description!}')
-                : Text(assignment.description!),
+            subtitle:Text(assignment.description!),
             onTap: () {
-              if(submit == false){
+              if(submit == false && expired == false){
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => StudentSubmitSurvey(survey: assignment),
                 ),
-              );}
+              );
+              }
+              if(view ==true )Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentSubmission(id: assignment.id.toString(),)));
             },
           ),
         );

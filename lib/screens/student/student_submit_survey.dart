@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:project/model/Survey.dart';
 import 'package:provider/provider.dart';
-
 import '../../DocumentVIewer.dart';
 import '../../provider/SurveyProvider.dart';
 import '../myAppBar.dart';
@@ -122,7 +121,10 @@ class _StudentSubmitSurveyState extends State<StudentSubmitSurvey> {
               OutlinedButton(
                 onPressed: (){
                   print(widget.survey);
-                  surveyProvider.submit_survey(context, _file!, widget.survey.id.toString(), descriptionController.text, widget.survey.classId!);
+                  if(_file !=null) {surveyProvider.submit_survey(context, _file!, widget.survey.id.toString(), descriptionController.text, widget.survey.classId!);}
+                  else {
+                    _showSuccessSnackbar(context, "Thêm file để nộp", Colors.red);
+                  }
                 },
                 child: Text('Nộp bài'),
                 style: OutlinedButton.styleFrom(
@@ -132,6 +134,17 @@ class _StudentSubmitSurveyState extends State<StudentSubmitSurvey> {
             ],
           ),
         ),
+      ),
+    );
+  }
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
       ),
     );
   }

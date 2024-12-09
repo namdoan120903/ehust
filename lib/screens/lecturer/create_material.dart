@@ -32,7 +32,6 @@ class _CreateMaterialState extends State<CreateMaterial> {
       setState(() {
         _file = File(result.files.single.path!);
       });
-
     } else {
       print("Chưa chọn tệp");
     }
@@ -45,63 +44,76 @@ class _CreateMaterialState extends State<CreateMaterial> {
         appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child:SingleChildScrollView( child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Thêm tài liệu mới',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Tên',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Thêm tài liệu mới',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: descriptionController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  labelText: 'Mô tả',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                SizedBox(height: 20),
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Tên',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
                   ),
                 ),
-              ),SizedBox(height: 20,),
-              _file != null
-                  ? Text("Tệp đã chọn: ${_file!.path.split('/').last}")
-                  : Text("Chưa chọn tệp"),
-              SizedBox(height: 16),
-              OutlinedButton(
-                onPressed:_pickFile,
-                child: Text('Tải tài liệu lên'),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.red),
+                SizedBox(height: 16),
+                TextField(
+                  controller: descriptionController,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    labelText: 'Mô tả',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 16),
-              if (materialProvider.isLoading) const CircularProgressIndicator(),
-              OutlinedButton(
-                onPressed: () {
-                  materialProvider.create_material(context, _file!, widget.classId!, nameController.text, descriptionController.text);
-                },
-                child: Text('Tạo bài kiểm tra'),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.red),
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-            ],
+                _file != null
+                    ? Text("Tệp đã chọn: ${_file!.path.split('/').last}")
+                    : Text("Chưa chọn tệp"),
+                SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: _pickFile,
+                  child: Text('Tải tài liệu lên'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.red),
+                  ),
+                ),
+                SizedBox(height: 16),
+                if (materialProvider.isLoading)
+                  const CircularProgressIndicator(),
+                OutlinedButton(
+                  onPressed: () {
+                    if (_file != null) {
+                      String extension = _file!.path.split('.').last;
+                      materialProvider.create_material(
+                          context,
+                          _file!,
+                          widget.classId!,
+                          nameController.text,
+                          descriptionController.text, extension);
+                    }
+                  },
+                  child: Text('Tạo bài kiểm tra'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
           ),
-          ),)
-    );
+        ));
   }
 }
