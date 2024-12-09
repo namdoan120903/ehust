@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/components/attend_class_list.dart';
 import 'package:project/screens/lecturer/lecturer_class_list.dart';
 import 'package:provider/provider.dart';
 import '../messenger_page.dart';
@@ -16,8 +17,6 @@ class LecturerHome extends StatefulWidget {
 }
 
 class _LecturerHomeState extends State<LecturerHome> {
-
-
   @override
   void initState() {
     super.initState();
@@ -38,21 +37,27 @@ class _LecturerHomeState extends State<LecturerHome> {
           Padding(
             padding: EdgeInsets.only(left: 20, top: 40, bottom: 10),
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
+                Navigator.pushNamed(context, "/profile");
               },
               child: Row(
                 children: [
-                  authProvider.user.avatar!=null&&authProvider.user.avatar!=""
-                      ?ClipOval(
-                    child: Image.network(
-                      'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
-                      width: 65,
-                      height: 65,
-                      fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
-                    ),
-                  ):CircleAvatar(
-                    backgroundColor: Colors.red,
-                    radius: 30,
+                  authProvider.user.avatar != null &&
+                          authProvider.user.avatar != ""
+                      ? ClipOval(
+                          child: Image.network(
+                            'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
+                            width: 65,
+                            height: 65,
+                            fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
+                          ),
+                        )
+                      : CircleAvatar(
+                          backgroundColor: Colors.red,
+                          radius: 30,
+                        ),
+                  SizedBox(
+                    width: 10,
                   ),
                   SizedBox(
                     width: 10,
@@ -83,16 +88,12 @@ class _LecturerHomeState extends State<LecturerHome> {
                     'Thông tin các lớp học của sinh viên', context, "class"),
                 _buildMenuItem(Icons.add, 'Tạo lớp học', 'Tạo lớp học mới',
                     context, "/lecturer/class"),
-                _buildMenuItem(
-                    Icons.folder,
-                    'Tài liệu',
-                    'Tài liệu của lớp học, môn học',
-                    context,
-                    "lecturer/send_notification"),
+                _buildMenuItem(Icons.folder, 'Tài liệu',
+                    'Tài liệu của lớp học, môn học', context, "material"),
                 _buildMenuItem(Icons.assignment, 'Bài tập',
                     'Thông tin bài tập môn học', context, "survey"),
-                _buildMenuItem(Icons.note, 'Nhập điểm',
-                    'Giảng viên nhập điểm cho sinh viên', context, "score"),
+                _buildMenuItem(Icons.note, 'Nghỉ học', 'Kiểm tra đơn nghỉ học',
+                    context, "absence"),
                 _buildMenuItem(Icons.check, 'Điểm danh',
                     'Điểm danh các lớp học', context, "attendance"),
               ],

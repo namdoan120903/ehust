@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/components/attend_class_list.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:project/screens/student/student_class.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,6 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
-
   @override
   void initState() {
     super.initState();
@@ -38,10 +38,10 @@ class _StudentHomeState extends State<StudentHome> {
       body: Column(
         children: [
           //Header
-          Padding(padding: EdgeInsets.only(left: 20, top: 40, bottom: 10),
-          child: GestureDetector(
-            onTap: (){
-
+          Padding(padding: EdgeInsets.only(left: 20, top: 40, bottom: 10)),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, "/profile");
             },
             child: Row(
               children: [
@@ -66,13 +66,16 @@ class _StudentHomeState extends State<StudentHome> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${authProvider.user.ho} ${authProvider.user.ten} | Student', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    Text(
+                      '${authProvider.user.ho} ${authProvider.user.ten} | Student',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     Text('Khoa hoc may tinh')
                   ],
                 )
               ],
             ),
-          ),
           ),
           Expanded(
             child: GridView.count(

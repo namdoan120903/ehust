@@ -73,7 +73,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        check: false,
+        check: true,
         title: "EHUST-STUDENT",
       ),
       body: SafeArea(

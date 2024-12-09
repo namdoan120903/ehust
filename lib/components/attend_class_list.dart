@@ -16,8 +16,8 @@ class AttendanceClassList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        check: false,
-        title: "EHUST-STUDENT",
+        check: true,
+        title: userRole == 'STUDENT' ? "EHUST-STUDENT" : "EHUST-LECTURER",
       ),
       body: classIds.isEmpty
           ? const Center(

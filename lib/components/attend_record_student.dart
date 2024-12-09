@@ -19,7 +19,7 @@ class StudentAttendancePage extends StatelessWidget {
 
     return Scaffold(
       appBar: MyAppBar(
-        check: false,
+        check: true,
         title: "EHUST-STUDENT",
       ),
       body: Padding(

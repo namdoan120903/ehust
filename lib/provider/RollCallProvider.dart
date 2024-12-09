@@ -166,10 +166,12 @@ class RollCallProvider with ChangeNotifier {
             json.decode(response.body)['data']['attendance_student_details'];
 
         // Convert the list of maps into a List<StudentAttendanceRecord>
-        _recordForLecturer = attendanceDetails
+        if (page == 0) {
+          _recordForLecturer = [];
+        }
+        _recordForLecturer.addAll(attendanceDetails
             .map((attendance) => StudentAttendanceRecord.fromMap(attendance))
-            .toList();
-        (_) => LecturerAttendancePage(classId: classId);
+            .toList());
         //data tam thoi ok, se chinh sua de hien thi sau
       } else {
         _attendanceList = [];
@@ -180,5 +182,37 @@ class RollCallProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<List<String>> fetchAttendanceDates(String classId) async {
+    // Set the API endpoint URL
+    token = await secureStorage.read(key: 'token');
+    final url = Uri.parse('${Constant.baseUrl}/it5023e/get_attendance_dates');
+
+    // Prepare the request body
+    final body = json.encode({
+      'token': token,
+      'class_id': classId,
+    });
+
+    // Send the POST request
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    // Check for a successful response
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final responseJson = json.decode(response.body);
+
+      // Extract the 'data' field and return as a List<String>
+      final List<String> attendanceDates =
+          List<String>.from(responseJson['data']);
+      return attendanceDates;
+    } else {
+      throw Exception('Failed to load attendance dates');
+    }
   }
 }
