@@ -6,6 +6,7 @@ import 'package:project/model/StudentAttendance.dart'; // Ensure the path is cor
 import 'package:project/provider/ClassProvider.dart'; // Ensure the path is correct
 import 'package:project/provider/NotificationProvider.dart';
 import 'package:project/provider/RollCallProvider.dart'; // Ensure the path is correct
+import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart'; // Provider package
 
 class RollCallScreen extends StatefulWidget {
@@ -52,19 +53,7 @@ class _RollCallScreenState extends State<RollCallScreen> {
     final rollCallProvider = Provider.of<RollCallProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop(); // Add this if you want to pop the page
-          },
-        ),
-        flexibleSpace: const Center(
-          child: Text("Điểm danh",
-              style: TextStyle(color: Colors.white, fontSize: 20)),
-        ),
-        backgroundColor: Colors.red[700],
-      ),
+      appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -81,6 +70,7 @@ class _RollCallScreenState extends State<RollCallScreen> {
             const SizedBox(height: 16),
             Expanded(
               child: ListView(
+                padding: const EdgeInsets.all(16.0),
                 children: [
                   Table(
                     border: TableBorder.all(color: Colors.black),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/model/Class.dart';
+import 'package:project/model/StudentAccount.dart';
 import 'package:provider/provider.dart';
 
 import '../Constant.dart';
@@ -49,6 +50,16 @@ class ClassProvider with ChangeNotifier {
   List<Class> registerClass = [];
   Class? getClassLecturer;
   List<Class> openClasss = [];
+
+  String findNameById(String studentId) {
+    for (StudentAccount studentAccount in getClassLecturer!.studentAccounts!) {
+      if (studentAccount.studentId == studentId) {
+        return "${studentAccount.lastName ?? ""} ${studentAccount.firstName ?? ""}"
+            .trim();
+      }
+    }
+    return "";
+  }
 
   Future<void> createClass(
       BuildContext context,
