@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:project/provider/AbsenceProvider.dart';
 import 'package:project/provider/AuthProvider.dart';
 import 'package:project/provider/ClassProvider.dart';
 import 'package:project/provider/FireBaseApi.dart';
@@ -47,9 +48,12 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => SurveyProvider()),
           ChangeNotifierProvider(create: (_) => NotificationProvider()),
           ChangeNotifierProvider(create: (_) => RollCallProvider()),
+          ChangeNotifierProvider(create: (_) => MaterialProvider()),
+          ChangeNotifierProvider(create: (_) => AbsenceProvider()),
         ],
         child: MaterialApp(
           navigatorKey: navigatorKey,
+          initialRoute: '/',
           debugShowCheckedModeBanner: false,
           routes: {
             '/student': (context) => StudentHome(),
@@ -59,6 +63,7 @@ class _MyAppState extends State<MyApp> {
             '/lecturer/class': (context) => LecturerClass(),
             '/lecturer/class/create': (context) => LecturerCreateClass(),
             '/lecturer/class/edit': (context) => LecturerEditClass(),
+            '/student/survey': (context) => StudentSurvey(),
             '/lecturer/class/take_attendance': (context) => RollCallScreen(),
             '/lecturer/class_list': (context) => LecturerClassList(
                   route: "",

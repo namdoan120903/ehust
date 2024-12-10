@@ -82,6 +82,8 @@ class MaterialProvider with ChangeNotifier {
       "class_id": classId
     };
     print(requestBody);
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_material_list'),

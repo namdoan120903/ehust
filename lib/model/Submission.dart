@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:intl/intl.dart';
+
 import 'StudentAccount.dart';
 
 class Submission{
@@ -32,18 +34,5 @@ class Submission{
         : null;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['assignment_id'] = this.assignmentId;
-    data['submission_time'] = this.submissionTime;
-    data['grade'] = this.grade;
-    data['file_url'] = this.fileUrl;
-    data['text_response'] = this.textResponse;
-    if (this.studentAccount != null) {
-      data['student_account'] = this.studentAccount!.toJson();
-    }
-    return data;
-  }
 
 }

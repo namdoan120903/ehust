@@ -22,15 +22,4 @@ class MyMaterial {
     materialLink = json['material_link'];
     materialType = json['material_type'];
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['class_id'] = this.classId;
-    data['material_name'] = this.materialName;
-    data['description'] = this.description;
-    data['material_link'] = this.materialLink;
-    data['material_type'] = this.materialType;
-    return data;
-  }
 }

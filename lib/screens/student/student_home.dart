@@ -89,7 +89,7 @@ class _StudentHomeState extends State<StudentHome> {
                 _buildMenuItem(Icons.assignment, 'Bài tập',
                     'Thông tin bài tập môn học', context, '/student/survey'),
                 _buildMenuItem(Icons.note, 'Nghỉ phép',
-                    'Đơn xin nghỉ phép của sinh viên', context, 'takeleave'),
+                    'Đơn xin nghỉ phép của sinh viên', context, 'absence'),
                 _buildMenuItem(Icons.check, 'Điểm danh',
                     'Điểm danh các lớp học', context, 'attendance'),
               ],

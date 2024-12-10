@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/model/Survey.dart';
 import 'package:provider/provider.dart';
 import '../../DocumentVIewer.dart';
@@ -54,7 +55,7 @@ class _StudentSubmitSurveyState extends State<StudentSubmitSurvey> {
                 ),
               ),
               Text(
-                '${widget.survey.deadline}',
+                '${DateFormat('HH:mm - dd/MM/yyyy').format(DateTime.parse(widget.survey.deadline!))}',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,

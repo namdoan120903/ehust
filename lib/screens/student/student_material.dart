@@ -53,7 +53,7 @@ class _StudentMaterialState extends State<StudentMaterial> {
                   ),
                 ),
               ],
-            ),Expanded(child:
+            ),materialProvider.isLoading?Center(child: CircularProgressIndicator()):Expanded(child:
             ListView.builder(
               itemCount: materialProvider.materials.length,
               itemBuilder: (context, index) {
