@@ -76,7 +76,8 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 0;
   final int _pageSize = 9;
-  late var rollCallProvider;
+  bool _isLoading = false;
+  late RollCallProvider rollCallProvider;
 
   @override
   void initState() {
@@ -84,165 +85,198 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       rollCallProvider = Provider.of<RollCallProvider>(context, listen: false);
-      _fetchAttendanceData(rollCallProvider);
+      _fetchAttendanceData();
     });
 
     // Scroll listener for pagination
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _fetchAttendanceData(rollCallProvider);
+              _scrollController.position.maxScrollExtent &&
+          !_isLoading) {
+        _fetchAttendanceData();
       }
     });
   }
 
-  void _fetchAttendanceData(RollCallProvider rollCallProvider) async {
+  Future<void> _fetchAttendanceData() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      // Replace with your API call
+      int initialSize = rollCallProvider.recordForLecturer.length;
+
       await rollCallProvider.getAttendanceList(
-          widget.classId, widget.date, _currentPage, _pageSize);
+        widget.classId,
+        widget.date,
+        _currentPage,
+        _pageSize,
+      );
+
+      int finalSize = rollCallProvider.recordForLecturer.length;
+
+      // Increment page if new data was loaded
+      if (finalSize > initialSize) {
+        _currentPage++;
+      }
     } catch (e) {
       print("Error fetching attendance data: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final rollCallProvider =
-        Provider.of<RollCallProvider>(context, listen: false);
-    final attendanceRecords = rollCallProvider.recordForLecturer;
-
+    final attendanceRecords =
+        context.watch<RollCallProvider>().recordForLecturer;
     final classProvider = Provider.of<ClassProvider>(context, listen: false);
-    classProvider.getClassInfoLecturer(context, widget.classId);
 
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
+      body: _isLoading && attendanceRecords.isEmpty
+          ? const Center(
+              child:
+                  CircularProgressIndicator()) // Centered loader for initial load
+          : Column(
               children: [
-                Table(
-                  border: TableBorder.all(color: Colors.black),
-                  columnWidths: const {
-                    0: FractionColumnWidth(0.3), // ID column
-                    1: FractionColumnWidth(0.5), // Name column
-                    3: FractionColumnWidth(0.2), // Attendance column
-                  },
-                  children: [
-                    // Table headers
-                    TableRow(
-                      decoration: BoxDecoration(color: Colors.grey[300]),
-                      children: const [
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text("MSSV",
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text("Họ và Tên",
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text("Trạng thái",
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Table rows with student data
-                    for (var student in attendanceRecords)
-                      TableRow(
+                Expanded(
+                  child: ListView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      Table(
+                        border: TableBorder.all(color: Colors.black),
+                        columnWidths: const {
+                          0: FractionColumnWidth(0.3), // ID column
+                          1: FractionColumnWidth(0.5), // Name column
+                          3: FractionColumnWidth(0.2), // Attendance column
+                        },
                         children: [
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(student.studentId,
-                                    textAlign: TextAlign.center),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                    classProvider
-                                        .findNameById(student.studentId),
-                                    textAlign: TextAlign.center),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    String newStatus =
-                                        student.status == 'PRESENT'
-                                            ? 'EXCUSED_ABSENCE'
-                                            : 'PRESENT'; // Toggle the status
-                                    await rollCallProvider.setAttendanceStatus(
-                                        student.attendanceId, newStatus);
-                                    setState(() {
-                                      student.status =
-                                          newStatus; // Set the new status
-                                    }); // Call the method with the attendance ID and new status
-                                  },
-                                  child: Icon(
-                                    student.status == 'PRESENT'
-                                        ? Icons.check_circle
-                                        : Icons.cancel,
-                                    color: student.status == 'PRESENT'
-                                        ? Colors.green
-                                        : Colors.red,
+                          // Table headers
+                          TableRow(
+                            decoration: BoxDecoration(color: Colors.grey[300]),
+                            children: const [
+                              TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text("MSSV",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
                                   ),
                                 ),
                               ),
-                            ),
+                              TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text("Họ và Tên",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text("Trạng thái",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                          // Table rows with student data
+                          for (var student in attendanceRecords)
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(student.studentId,
+                                          textAlign: TextAlign.center),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                          classProvider
+                                              .findNameById(student.studentId),
+                                          textAlign: TextAlign.center),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          String newStatus = student.status ==
+                                                  'PRESENT'
+                                              ? 'EXCUSED_ABSENCE'
+                                              : 'PRESENT'; // Toggle the status
+                                          await rollCallProvider
+                                              .setAttendanceStatus(
+                                                  student.attendanceId,
+                                                  newStatus);
+                                          setState(() {
+                                            student.status =
+                                                newStatus; // Set the new status
+                                          });
+                                        },
+                                        child: Icon(
+                                          student.status == 'PRESENT'
+                                              ? Icons.check_circle
+                                              : Icons.cancel,
+                                          color: student.status == 'PRESENT'
+                                              ? Colors.green
+                                              : Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
-                  ],
+                    ],
+                  ),
                 ),
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: CircularProgressIndicator(),
+                  ),
               ],
             ),
-          ),
-          if (rollCallProvider.isLoading && attendanceRecords.isEmpty)
-            const Center(child: CircularProgressIndicator()), // Initial loader
-        ],
-      ),
     );
   }
 
