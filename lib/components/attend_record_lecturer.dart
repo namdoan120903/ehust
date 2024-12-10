@@ -75,7 +75,7 @@ class AttendanceDetailPage extends StatefulWidget {
 class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 0;
-  final int _pageSize = 9;
+  final int _pageSize = 18;
   bool _isLoading = false;
   late RollCallProvider rollCallProvider;
 
@@ -135,6 +135,7 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
     final attendanceRecords =
         context.watch<RollCallProvider>().recordForLecturer;
     final classProvider = Provider.of<ClassProvider>(context, listen: false);
+    classProvider.getClassInfoLecturer(context, widget.classId);
 
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
