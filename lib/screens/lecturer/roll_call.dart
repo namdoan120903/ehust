@@ -234,7 +234,7 @@ class _RollCallScreenState extends State<RollCallScreen> {
                               .where((student) =>
                                   student.attendanceStatus ==
                                   'ABSENCE') // Filter ABSENCE
-                              .map((student) => student.accountId.toString())
+                              .map((student) => student.id.toString())
                               .toList();
                           print("absentStudentIds: " +
                               absentStudentIds.toString());
