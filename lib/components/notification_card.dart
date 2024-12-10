@@ -38,7 +38,9 @@ class NotificationCard extends StatelessWidget {
           onPressed: () {
             if (status == 'UNREAD') onRead(); // Trigger callback when UNREAD
           },
-          child: Text('Chi tiết', style: TextStyle(color: Colors.red[700])),
+          child: status == 'UNREAD'
+              ? Text('Xem', style: TextStyle(color: Colors.red[700]))
+              : Text('Đã xem', style: TextStyle(color: Colors.red[700])),
         ),
       ),
     );
