@@ -14,7 +14,7 @@ class _CreateMessagePageState extends State<CreateMessagePage> {
     {
       "name": "Nguyen Van Tho",
       "email": "tho.nguyen@example.com",
-      "avatar": "https://hoangthuong.net/wp-content/uploads/2022/05/hinh-anh-cho-con-de-thuong-21.jpg",
+      "avatar": "https://i.pravatar.cc/300?img=1",
     },
     {
       "name": "Tuong Phi Tuan",
@@ -95,6 +95,10 @@ class _CreateMessagePageState extends State<CreateMessagePage> {
                     title: Text(user["name"]!),
                     subtitle: Text(user["email"]!),
                     onTap: () {
+                      // Giả sử bạn tạo một conversationId mới khi chọn người dùng
+                      String conversationId = "new_conversation_${DateTime.now().millisecondsSinceEpoch}";
+                      String partnerId = "partner_${user["email"]}"; // Hoặc có thể là user["id"] nếu có ID
+
                       // Chuyển đến trang chat khi nhấn vào người dùng
                       Navigator.push(
                         context,
@@ -102,6 +106,8 @@ class _CreateMessagePageState extends State<CreateMessagePage> {
                           builder: (context) => ChatPage(
                             username: user["name"]!,
                             avatar: user["avatar"]!,
+                            conversationId: conversationId,  // Truyền conversationId
+                            partnerId: partnerId,  // Truyền partnerId
                           ),
                         ),
                       );
