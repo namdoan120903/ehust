@@ -9,9 +9,11 @@ import '../Constant.dart';
 class ChatProvider with ChangeNotifier {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   String? token;
+  bool isLoading = false;
   late StompClient stompClient;
   bool isConnected = false;
   List<Conversation> conversations = [];
+  List<LastMessage> messages = [];
 
   // Hàm khởi tạo WebSocket kết nối
   void connect(String userId) async {
@@ -47,12 +49,11 @@ class ChatProvider with ChangeNotifier {
   }
 
   // Gửi tin nhắn
-  Future<void> sendMessage(String receiverId, String content, String senderEmail) async {
+  Future<void> sendMessage(BuildContext context, String receiverId, String content) async {
     token = await _secureStorage.read(key: 'token');
     final message = {
       'receiver': {'id': receiverId},
       'content': content,
-      'sender': senderEmail,
       'token': token,
     };
 
@@ -75,6 +76,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> get_conversation_list(BuildContext context) async {
+
     token = await _secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -82,6 +84,8 @@ class ChatProvider with ChangeNotifier {
       "count": "100"
     };
     try {
+      isLoading = true;
+      notifyListeners();
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_list_conversation'),
         headers: {"Content-Type": "application/json"},
@@ -102,5 +106,44 @@ class ChatProvider with ChangeNotifier {
       Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
       print(e.toString());
     }
+    isLoading = false;
+    notifyListeners();
+  }
+
+
+  Future<void> get_conversation(BuildContext context, String id) async {
+    token = await _secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "index": "0",
+      "count": "100",
+      "conversation_id": id,
+      "mark_as_read": "true"
+    };
+    try {
+      isLoading = true;
+      notifyListeners();
+      final response = await http.post(
+        Uri.parse('${Constant.baseUrl}/it5023e/get_conversation'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonData = json.decode(responseBody)['data'];
+        messages = (jsonData['conversation'] as List)
+            .map((classJson) => LastMessage.fromJson(classJson))
+            .toList();
+        print(conversations);
+        notifyListeners();
+      } else {
+        Constant.showSuccessSnackbar(context, response.body, Colors.red);
+      }
+    } catch (e) {
+      Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
+      print(e.toString());
+    }
+    isLoading = false;
+    notifyListeners();
   }
 }

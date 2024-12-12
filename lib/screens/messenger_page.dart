@@ -38,7 +38,6 @@ class _MessengerPageState extends State<MessengerPage> {
         itemBuilder: (context, index) {
           final conversation = conversations[index];
           final lastMessage = conversation.lastMessage;
-          final sender = lastMessage?.sender;
           final partner = conversation.partner;
 
           return ListTile(
@@ -62,7 +61,7 @@ class _MessengerPageState extends State<MessengerPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatPage(partner: partner,),
+                  builder: (context) => ChatPage(partner: partner, id: conversation.id!),
                 ),
               );
             },
