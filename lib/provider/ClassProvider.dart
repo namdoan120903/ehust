@@ -187,9 +187,9 @@ class ClassProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         classes.removeAt(index);
-        _showSuccessSnackbar(context, "Xóa lớp học thành công", Colors.green);
         notifyListeners();
         Navigator.pop(context);
+        _showSuccessSnackbar(context, "Xóa lớp học thành công", Colors.green);
       } else {
         _showSuccessSnackbar(
             context, "Có lỗi xảy ra, không thể xóa lớp", Colors.red);

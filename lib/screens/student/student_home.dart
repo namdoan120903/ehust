@@ -4,7 +4,6 @@ import 'package:project/screens/student/student_class.dart';
 import 'package:provider/provider.dart';
 import '../messenger_page.dart';
 
-
 import '../../components/attend_class_list.dart';
 import '../../provider/AuthProvider.dart';
 import '../../provider/ClassProvider.dart';
@@ -157,10 +156,10 @@ class _StudentHomeState extends State<StudentHome> {
       elevation: 5,
       child: InkWell(
         onTap: () async {
-          if (route == "/student/class/register") {
+          if (route == "/student/class/register" || route =="/student/survey") {
             // Navigate to class registration screen
             Navigator.pushNamed(context, route);
-          } else if (route == "attendance") {
+          }else if (route == "attendance") {
             // Handle "Điểm danh" button tap
             final classProvider =
                 Provider.of<ClassProvider>(context, listen: false);

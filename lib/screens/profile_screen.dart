@@ -276,7 +276,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? Text("Tệp đã chọn: ${_file!.path.split('/').last}")
                         : Text("Chưa chọn tệp"),
                     SizedBox(height: 8),
-                    if (authProvider.isLoading) const CircularProgressIndicator(),
+                    if(authProvider.isLoading) CircularProgressIndicator(),
                     OutlinedButton(
                       onPressed: () async {
                         // Mở hộp thoại chọn tệp

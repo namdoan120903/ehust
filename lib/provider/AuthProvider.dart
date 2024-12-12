@@ -275,6 +275,8 @@ class AuthProvider with ChangeNotifier {
   Future<void> changeInfo(
       BuildContext context, File uploadFile, String name) async {
     String? token = await _secureStorage.read(key: 'token');
+    _isLoading = true;
+    notifyListeners();
     try {
       var request = http.MultipartRequest('POST',
           Uri.parse("${Constant.baseUrl}/it4788/change_info_after_signup"));
@@ -295,8 +297,6 @@ class AuthProvider with ChangeNotifier {
       // Thêm header nếu cần
       request.headers['Content-Type'] = 'multipart/form-data';
 
-      _isLoading = true;
-      notifyListeners();
       var response = await request.send();
       print('send request');
       var responseBody = await http.Response.fromStream(response);

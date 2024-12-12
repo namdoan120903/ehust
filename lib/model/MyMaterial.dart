@@ -11,7 +11,7 @@ class MyMaterial {
         this.classId,
         this.materialName,
         this.description,
-        this.materialLink,
+        this.materialLink="",
         this.materialType});
 
   MyMaterial.fromJson(Map<String, dynamic> json) {

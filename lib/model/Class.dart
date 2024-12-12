@@ -36,10 +36,8 @@ class Class {
     classType = json['class_type'];
     lecturerName = json['lecturer_name'];
     studentCount = json['student_count'];
-    DateTime parsedDate = DateTime.parse(json['start_date']);
-    startDate = DateFormat('dd/MM/yyyy').format(parsedDate);
-    DateTime parsedDate1 = DateTime.parse(json['end_date']);
-    endDate = DateFormat('dd/MM/yyyy').format(parsedDate);
+    endDate = json['end_date'];
+    startDate = json['start_date'];
     status = json['status'];
     if (json['student_accounts'] != null) {
       studentAccounts = <StudentAccount>[];

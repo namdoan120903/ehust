@@ -14,6 +14,7 @@ class GoogleDriveViewer extends StatefulWidget {
 class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
   late WebViewController controller;
   bool _isLoading = true; // Biến trạng thái để theo dõi tiến trình tải
+  bool _isError = false; // Biến trạng thái để theo dõi lỗi
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
           onPageStarted: (String url) {
             setState(() {
               _isLoading = true; // Khi bắt đầu tải, hiển thị loading
+              _isError = false; // Đặt lại trạng thái lỗi
             });
             print('Page started loading: $url');
           },
@@ -39,6 +41,13 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
             });
             print('Page finished loading: $url');
           },
+          onWebResourceError: (WebResourceError error) {
+            setState(() {
+              _isLoading = false; // Dừng loading
+              _isError = true; // Đặt trạng thái lỗi
+            });
+            print('Error loading page: ${error.description}');
+          },
         ),
       )
       ..loadRequest(Uri.parse(widget.driveUrl));
@@ -47,11 +56,25 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(check: true, title: 'EHUST',),
+      appBar: MyAppBar(
+        check: true,
+        title: 'EHUST-DOCUMENT',
+      ),
       body: Stack(
         children: [
-          // WebView
-          WebViewWidget(controller: controller),
+          // Nếu có lỗi, hiển thị thông báo lỗi
+          if (_isError)
+            Center(
+              child: Text(
+                'Không thể tải tệp. Vui lòng kiểm tra đường dẫn hoặc thử lại sau.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red, fontSize: 16),
+              ),
+            ),
+
+          // Nếu không lỗi, hiển thị WebView
+          if (!_isError)
+            WebViewWidget(controller: controller),
 
           // Nếu đang tải, hiển thị CircularProgressIndicator
           if (_isLoading)

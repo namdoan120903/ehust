@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:project/provider/AbsenceProvider.dart';
 import 'package:project/provider/AuthProvider.dart';
+import 'package:project/provider/ChatProvider.dart';
 import 'package:project/provider/ClassProvider.dart';
 import 'package:project/provider/FireBaseApi.dart';
 import 'package:project/provider/NotificationProvider.dart';
@@ -55,6 +56,7 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => RollCallProvider()),
           ChangeNotifierProvider(create: (_)=>MaterialProvider()),
           ChangeNotifierProvider(create: (_)=>AbsenceProvider()),
+          ChangeNotifierProvider(create: (_)=>ChatProvider()),
         ],
         child: MaterialApp(
           navigatorKey: navigatorKey,

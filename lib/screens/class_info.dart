@@ -18,7 +18,7 @@ class _ClassInfoState extends State<ClassInfo> {
     final classProvider = Provider.of<ClassProvider>(context);
     Class? classModel = classProvider.getClassLecturer;
     return Scaffold(
-      appBar: MyAppBar(check: true, title: "EHUST"),
+      appBar: MyAppBar(check: true, title: "EHUST-CLASS"),
       body:classProvider.isLoading?Center(child: CircularProgressIndicator()): ListView(
             padding: EdgeInsets.all(16.0),
             children: [
