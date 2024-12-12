@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/components/attend_class_list.dart';
 import 'package:project/screens/lecturer/lecturer_class_list.dart';
 import 'package:provider/provider.dart';
-
+import '../messenger_page.dart';
 import '../../provider/AuthProvider.dart';
 import '../../provider/ClassProvider.dart';
 import '../myAppBar.dart';
@@ -117,7 +117,11 @@ class _LecturerHomeState extends State<LecturerHome> {
             ),
             GestureDetector(
               onTap: () {
-                // Xử lý khi bấm nút Chat
+                // Chuyển sang MessengerPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MessengerPage()),
+                );
                 print('Chat được bấm');
               },
               child: Column(
