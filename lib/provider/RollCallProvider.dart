@@ -19,7 +19,6 @@ class RollCallProvider with ChangeNotifier {
   List<String> get attendanceList => _attendanceList;
   String? get attendanceStatus => _attendanceStatus;
   List<StudentAttendanceRecord> get recordForLecturer => _recordForLecturer;
-
   String formatDateString(String dateString) {
     // Parse the input date string to a DateTime object
     final DateFormat inputFormat = DateFormat('dd/MM/yyyy');
@@ -166,12 +165,12 @@ class RollCallProvider with ChangeNotifier {
 
         // Convert the list of maps into a List<StudentAttendanceRecord>
         if (page == 0) {
-          _recordForLecturer = [];
+          recordForLecturer.clear();
         }
         _recordForLecturer.addAll(attendanceDetails
             .map((attendance) => StudentAttendanceRecord.fromMap(attendance))
             .toList());
-        //data tam thoi ok, se chinh sua de hien thi sau
+        notifyListeners();
       } else {
         _attendanceList = [];
       }

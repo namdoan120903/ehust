@@ -16,7 +16,6 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +60,9 @@ class _StudentHomeState extends State<StudentHome> {
                 SizedBox(
                   width: 10,
                 ),
-                SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -83,12 +84,18 @@ class _StudentHomeState extends State<StudentHome> {
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               children: [
-                _buildMenuItem(Icons.people, 'Lớp học', 'Thông tin các lớp học của sinh viên',context, 'class'),
-                _buildMenuItem(Icons.add, 'Đăng kí', 'Đăng kí lớp học', context, '/student/class/register'),
-                _buildMenuItem(Icons.folder, 'Tài liệu', 'Tài liệu của lớp học, môn học', context, 'material'),
-                _buildMenuItem(Icons.assignment, 'Bài tập', 'Thông tin bài tập môn học', context, '/student/survey'),
-                _buildMenuItem(Icons.note, 'Nghỉ phép', 'Đơn xin nghỉ phép của sinh viên', context, 'absence'),
-                _buildMenuItem(Icons.check, 'Điểm danh', 'Điểm danh các lớp học', context, 'attendance'),
+                _buildMenuItem(Icons.people, 'Lớp học',
+                    'Thông tin các lớp học của sinh viên', context, 'class'),
+                _buildMenuItem(Icons.add, 'Đăng kí', 'Đăng kí lớp học', context,
+                    '/student/class/register'),
+                _buildMenuItem(Icons.folder, 'Tài liệu',
+                    'Tài liệu của lớp học, môn học', context, 'material'),
+                _buildMenuItem(Icons.assignment, 'Bài tập',
+                    'Thông tin bài tập môn học', context, '/student/survey'),
+                _buildMenuItem(Icons.note, 'Nghỉ phép',
+                    'Đơn xin nghỉ phép của sinh viên', context, 'absence'),
+                _buildMenuItem(Icons.check, 'Điểm danh',
+                    'Điểm danh các lớp học', context, 'attendance'),
               ],
             ),
           )
@@ -156,10 +163,11 @@ class _StudentHomeState extends State<StudentHome> {
       elevation: 5,
       child: InkWell(
         onTap: () async {
-          if (route == "/student/class/register" || route =="/student/survey") {
+          if (route == "/student/class/register" ||
+              route == "/student/survey") {
             // Navigate to class registration screen
             Navigator.pushNamed(context, route);
-          }else if (route == "attendance") {
+          } else if (route == "attendance") {
             // Handle "Điểm danh" button tap
             final classProvider =
                 Provider.of<ClassProvider>(context, listen: false);

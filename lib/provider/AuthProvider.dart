@@ -7,6 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/Constant.dart';
 import 'package:project/main.dart';
+import 'package:project/provider/NotificationProvider.dart';
+import 'package:provider/provider.dart';
 
 import '../model/User.dart';
 
@@ -95,6 +97,7 @@ class AuthProvider with ChangeNotifier {
           Navigator.pushNamed(context, '/lecturer');
         }
         _showSuccessSnackbar(context, "Đăng nhâp thành công", Colors.green);
+        NotificationProvider notificationProvider = NotificationProvider();
       } else if (response.statusCode == 403) {
         _locked = true;
         if (_verify_code == "") await getVerifyCode(context, email, password);

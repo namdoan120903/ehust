@@ -71,16 +71,12 @@ class NotificationProvider with ChangeNotifier {
           body: json.encode({"token": token, "notification_id": id}),
         );
 
-        print("response.statusCode " + response.statusCode.toString());
-
-        if (response.statusCode == 200) {
-          // After successfully marking as read, reload the unread count
-          await getUnreadNotificationCount();
-          notifyListeners();
-        } else {
-          print("Failed to mark notifications as read: ${response.body}");
-        }
+        print(id.toString() +
+            " response.statusCode " +
+            response.statusCode.toString());
       }
+      await getUnreadNotificationCount();
+      notifyListeners();
     } catch (error) {
       print("Error marking notifications as read: $error");
     }
