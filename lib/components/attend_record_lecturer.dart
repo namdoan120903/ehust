@@ -73,45 +73,73 @@ class AttendanceDetailPage extends StatefulWidget {
 }
 
 class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
-  final ScrollController _scrollController = ScrollController();
   int _currentPage = 0;
-  final int _pageSize = 9;
-  late var rollCallProvider;
+  final int _pageSize = 18;
+  bool _isLoading = false;
+  bool _hasMoreData = true; // Track if more data is available
+  late ScrollController _scrollController;
+  late RollCallProvider rollCallProvider;
 
   @override
   void initState() {
     super.initState();
-
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       rollCallProvider = Provider.of<RollCallProvider>(context, listen: false);
-      _fetchAttendanceData(rollCallProvider);
-    });
-
-    // Scroll listener for pagination
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _fetchAttendanceData(rollCallProvider);
-      }
+      _fetchAttendanceData();
     });
   }
 
-  void _fetchAttendanceData(RollCallProvider rollCallProvider) async {
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoading &&
+        _hasMoreData) {
+      _fetchAttendanceData();
+    }
+  }
+
+  Future<void> _fetchAttendanceData() async {
+    if (_isLoading || !_hasMoreData) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      // Replace with your API call
+      // Save the initial length of the records
+      int initialSize = rollCallProvider.recordForLecturer.length;
+
+      // Fetch new data
       await rollCallProvider.getAttendanceList(
-          widget.classId, widget.date, _currentPage, _pageSize);
+        widget.classId,
+        widget.date,
+        _currentPage,
+        _pageSize,
+      );
+
+      // Check if new data was added
+      int finalSize = rollCallProvider.recordForLecturer.length;
+
+      if (finalSize > initialSize) {
+        _currentPage++; // Increment the page for the next fetch
+      } else {
+        _hasMoreData = false; // No more data available
+      }
     } catch (e) {
       print("Error fetching attendance data: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final rollCallProvider =
-        Provider.of<RollCallProvider>(context, listen: false);
-    final attendanceRecords = rollCallProvider.recordForLecturer;
-
+    final attendanceRecords =
+        context.watch<RollCallProvider>().recordForLecturer;
     final classProvider = Provider.of<ClassProvider>(context, listen: false);
     classProvider.getClassInfoLecturer(context, widget.classId);
 
@@ -121,6 +149,7 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
         children: [
           Expanded(
             child: ListView(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16.0),
               children: [
                 Table(
@@ -131,7 +160,6 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
                     3: FractionColumnWidth(0.2), // Attendance column
                   },
                   children: [
-                    // Table headers
                     TableRow(
                       decoration: BoxDecoration(color: Colors.grey[300]),
                       children: const [
@@ -173,7 +201,7 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
                         ),
                       ],
                     ),
-                    // Table rows with student data
+                    // Populate rows dynamically
                     for (var student in attendanceRecords)
                       TableRow(
                         children: [
@@ -212,13 +240,12 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
                                     String newStatus =
                                         student.status == 'PRESENT'
                                             ? 'EXCUSED_ABSENCE'
-                                            : 'PRESENT'; // Toggle the status
+                                            : 'PRESENT';
                                     await rollCallProvider.setAttendanceStatus(
                                         student.attendanceId, newStatus);
                                     setState(() {
-                                      student.status =
-                                          newStatus; // Set the new status
-                                    }); // Call the method with the attendance ID and new status
+                                      student.status = newStatus;
+                                    });
                                   },
                                   child: Icon(
                                     student.status == 'PRESENT'
@@ -239,8 +266,11 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
               ],
             ),
           ),
-          if (rollCallProvider.isLoading && attendanceRecords.isEmpty)
-            const Center(child: CircularProgressIndicator()), // Initial loader
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              child: CircularProgressIndicator(),
+            ),
         ],
       ),
     );

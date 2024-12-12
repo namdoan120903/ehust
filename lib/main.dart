@@ -54,12 +54,13 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => SurveyProvider()),
           ChangeNotifierProvider(create: (_) => NotificationProvider()),
           ChangeNotifierProvider(create: (_) => RollCallProvider()),
-          ChangeNotifierProvider(create: (_)=>MaterialProvider()),
-          ChangeNotifierProvider(create: (_)=>AbsenceProvider()),
-          ChangeNotifierProvider(create: (_)=>ChatProvider()),
+          ChangeNotifierProvider(create: (_) => MaterialProvider()),
+          ChangeNotifierProvider(create: (_) => AbsenceProvider()),
+          ChangeNotifierProvider(create: (_) => ChatProvider()),
         ],
         child: MaterialApp(
           navigatorKey: navigatorKey,
+          initialRoute: '/',
           debugShowCheckedModeBanner: false,
           routes: {
             '/student': (context) => StudentHome(),
@@ -69,6 +70,7 @@ class _MyAppState extends State<MyApp> {
             '/lecturer/class': (context) => LecturerClass(),
             '/lecturer/class/create': (context) => LecturerCreateClass(),
             '/lecturer/class/edit': (context) => LecturerEditClass(),
+            '/student/survey': (context) => StudentSurvey(),
             '/lecturer/class/take_attendance': (context) => RollCallScreen(),
             '/lecturer/class_list': (context) => LecturerClassList(
                   route: "",
@@ -77,7 +79,7 @@ class _MyAppState extends State<MyApp> {
             '/signin': (context) => SignInScreen(),
             '/signup': (context) => SignUpScreen(),
             '/notifications': (context) => NotificationsScreen(),
-            '/student/survey': (context)=> StudentSurvey(),
+            '/student/survey': (context) => StudentSurvey(),
           },
           home: SignInScreen(),
         ),
