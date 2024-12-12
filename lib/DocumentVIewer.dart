@@ -3,7 +3,7 @@ import 'package:project/screens/myAppBar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class GoogleDriveViewer extends StatefulWidget {
-  final String driveUrl;
+  final String? driveUrl;
 
   const GoogleDriveViewer({Key? key, required this.driveUrl}) : super(key: key);
 
@@ -50,7 +50,7 @@ class _GoogleDriveViewerState extends State<GoogleDriveViewer> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(widget.driveUrl));
+      ..loadRequest(Uri.parse(widget.driveUrl!));
   }
 
   @override

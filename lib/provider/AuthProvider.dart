@@ -117,7 +117,7 @@ class AuthProvider with ChangeNotifier {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
 
     _isLoading = false;
@@ -166,7 +166,7 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
-      _showErrorDialog(context, "CÓ lỗi xảy ra");
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -202,7 +202,7 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -234,7 +234,7 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -271,7 +271,7 @@ class AuthProvider with ChangeNotifier {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -323,7 +323,7 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print(e.toString());
-      _showErrorDialog(context, e.toString());
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -350,7 +350,7 @@ class AuthProvider with ChangeNotifier {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/Constant.dart';
 import 'package:provider/provider.dart';
 
 import '../../DocumentVIewer.dart';
@@ -62,15 +63,18 @@ class _StudentMaterialState extends State<StudentMaterial> {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     onTap: (){
-                      print(material.materialLink);
-                      Navigator.push(
+                      if(material.materialLink == null) {
+                        Constant.showSuccessSnackbar(
+                            context, "Tệp đang bị lỗi, vui lòng thử lại sau",
+                            Colors.red);
+                      }else{Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => GoogleDriveViewer(
-                              driveUrl: material.materialLink!
+                              driveUrl: material?.materialLink
                           ),
                         ),
-                      );
+                      );}
                     },
                     title: Text('${material.materialName!}'),
                     subtitle: Column(

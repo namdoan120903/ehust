@@ -47,7 +47,15 @@ class _LecturerHomeState extends State<LecturerHome> {
                             'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
                             width: 65,
                             height: 65,
-                            fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
+                            fit: BoxFit.cover,
+                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                              // Nếu có lỗi, hiển thị một container màu đỏ
+                              return Container(
+                                width: 65,
+                                height: 65,
+                                color: Colors.red, // Màu đỏ
+                              );
+                            },//// Cắt ảnh để vừa với kích thước
                           ),
                         )
                       : CircleAvatar(

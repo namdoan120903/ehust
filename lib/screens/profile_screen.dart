@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:project/provider/ChatProvider.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: MyAppBar(
         check: true,
@@ -190,6 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        chatProvider.disconnect();
                         authProvider.logout(context);
                         Navigator.pushNamed(context, '/signin');
                       },

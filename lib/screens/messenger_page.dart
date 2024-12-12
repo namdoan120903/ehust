@@ -29,7 +29,7 @@ class _MessengerPageState extends State<MessengerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context);
     conversations = chatProvider.conversations;
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-CHAT"),
@@ -43,7 +43,7 @@ class _MessengerPageState extends State<MessengerPage> {
           return ListTile(
             leading: CircleAvatar(
               child: Text(
-                partner!.name![0], // Hiển thị chữ cái đầu của tên người gửi
+                "${partner!.name![0]}", // Hiển thị chữ cái đầu của tên người gửi
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -51,9 +51,9 @@ class _MessengerPageState extends State<MessengerPage> {
               partner.name!,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(lastMessage!.message!),
+            subtitle: Text(lastMessage?.message != null ? lastMessage!.message! : 'Tin nhắn đã bị xóa',),
             trailing: Text(
-              lastMessage.createdAt!.substring(11, 16), // Hiển thị giờ và phút
+              lastMessage!.createdAt!.substring(11, 16), // Hiển thị giờ và phút
               style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
             onTap: () {

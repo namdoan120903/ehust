@@ -36,45 +36,55 @@ class _StudentHomeState extends State<StudentHome> {
       body: Column(
         children: [
           //Header
-          Padding(padding: EdgeInsets.only(left: 20, top: 40, bottom: 10)),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, "/profile");
-            },
-            child: Row(
-              children: [
-                authProvider.user.avatar != null &&
-                        authProvider.user.avatar != ""
-                    ? ClipOval(
-                        child: Image.network(
-                          'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
-                          width: 65,
-                          height: 65,
-                          fit: BoxFit.cover, // Cắt ảnh để vừa với kích thước
+          Padding(
+            padding: EdgeInsets.only(left: 20, top: 40, bottom: 10),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "/profile");
+              },
+              child: Row(
+                children: [
+                  authProvider.user.avatar != null &&
+                          authProvider.user.avatar != ""
+                      ? ClipOval(
+                          child: Image.network(
+                            'https://drive.google.com/uc?export=view&id=${authProvider.fileId}',
+                            width: 65,
+                            height: 65,
+                            fit: BoxFit.cover,
+                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                              // Nếu có lỗi, hiển thị một container màu đỏ
+                              return Container(
+                                width: 65,
+                                height: 65,
+                                color: Colors.red, // Màu đỏ
+                              );
+                            },// Cắt ảnh để vừa với kích thước
+                          ),
+                        )
+                      : CircleAvatar(
+                          backgroundColor: Colors.red,
+                          radius: 30,
                         ),
-                      )
-                    : CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 30,
+                  SizedBox(
+                    width: 10,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${authProvider.user.ho} ${authProvider.user.ten} | Student',
+                        style:
+                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                SizedBox(
-                  width: 10,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${authProvider.user.ho} ${authProvider.user.ten} | Student',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    Text('Khoa hoc may tinh')
-                  ],
-                )
-              ],
+                      Text('Khoa hoc may tinh')
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
           Expanded(

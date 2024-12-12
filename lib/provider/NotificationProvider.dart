@@ -39,7 +39,7 @@ class NotificationProvider with ChangeNotifier {
       );
       print("response.statusCode: " + response.statusCode.toString());
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(utf8.decode(response.bodyBytes));
         print("data: " + data.toString());
         if (data['data'] != null) {
           _notifications.addAll(List<Map<String, dynamic>>.from(data['data']));

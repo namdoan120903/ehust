@@ -49,7 +49,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   // Gửi tin nhắn
-  Future<void> sendMessage(BuildContext context, String receiverId, String content) async {
+  Future<void> sendMessage(BuildContext context, String receiverId, String content, String conversationId) async {
     token = await _secureStorage.read(key: 'token');
     final message = {
       'receiver': {'id': receiverId},
@@ -66,6 +66,9 @@ class ChatProvider with ChangeNotifier {
     } else {
       print('WebSocket is not connected!');
     }
+
+    await get_conversation(context, conversationId);
+    notifyListeners();
   }
 
   // Ngắt kết nối WebSocket
@@ -121,8 +124,6 @@ class ChatProvider with ChangeNotifier {
       "mark_as_read": "true"
     };
     try {
-      isLoading = true;
-      notifyListeners();
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_conversation'),
         headers: {"Content-Type": "application/json"},
@@ -143,7 +144,30 @@ class ChatProvider with ChangeNotifier {
       Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
       print(e.toString());
     }
-    isLoading = false;
-    notifyListeners();
+  }
+
+  Future<void> delete_message(BuildContext context, String message_id, String con_id) async {
+    token = await _secureStorage.read(key: 'token');
+    final Map<String, dynamic> requestBody = {
+      "token": token,
+      "message_id": message_id,
+      "conversation_id": con_id,
+    };
+    try {
+      final response = await http.post(
+        Uri.parse('${Constant.baseUrl}/it5023e/delete_message'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        await get_conversation(context, con_id);
+        notifyListeners();
+      } else {
+        Constant.showSuccessSnackbar(context, response.body, Colors.red);
+      }
+    } catch (e) {
+      Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
+      print(e.toString());
+    }
   }
 }
