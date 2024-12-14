@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:project/provider/NotificationProvider.dart';
@@ -63,18 +64,13 @@ class FireBaseApi {
       print(
           "Foreground notification received: ${message.notification?.title}, ${message.notification?.body}");
 
+      // Display a local notification
+      _showLocalNotification(message);
+
+      // Optional: Update the notification count or handle custom logic
       final notificationProvider = Provider.of<NotificationProvider>(
           navigatorKey.currentContext!,
           listen: false);
-      // Show a toast message
-      Fluttertoast.showToast(
-        msg: 'You have a new notification',
-        toastLength: Toast.LENGTH_LONG, // Change to LONG for a longer duration
-        gravity: ToastGravity.TOP, // Position at the top of the screen
-        backgroundColor: Colors.white, // Set background color to white
-        textColor: Colors.black, // Set text color to black
-        fontSize: 16.0, // Optional: set font size
-      );
       notificationProvider.getUnreadNotificationCount();
     });
 
@@ -91,6 +87,27 @@ class FireBaseApi {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _handleMessage(message);
     });
+  }
+
+  Future<void> _showLocalNotification(RemoteMessage message) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id', // Use a unique channel ID
+      'E-HUST', // Channel name visible to users
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    // Show the notification
+    await flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.notification?.title ?? 'No Title',
+      message.notification?.body ?? 'No Body',
+      platformChannelSpecifics,
+    );
   }
 
   void _handleMessage(RemoteMessage message) {

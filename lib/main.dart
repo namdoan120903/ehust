@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:project/provider/AbsenceProvider.dart';
 import 'package:project/provider/AuthProvider.dart';
 import 'package:project/provider/ChatProvider.dart';
@@ -30,11 +31,20 @@ import 'package:project/provider/ClassProvider.dart';
 import 'package:project/provider/MaterialProvider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FireBaseApi().initNotifications();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings(
+          '@mipmap/ic_launcher'); // Ensure you have a launcher icon
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
   runApp(const MyApp());
 }
 
