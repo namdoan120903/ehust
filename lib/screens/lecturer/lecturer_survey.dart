@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/model/Class.dart';
 import 'package:project/provider/SurveyProvider.dart';
 import 'package:project/screens/lecturer/create_survey.dart';
@@ -110,7 +111,7 @@ class _LecturerSurveyState extends State<LecturerSurvey> {
                       children: [
                         SizedBox(height: 4), // Khoảng cách giữa các dòng
                         Text(
-                          'Hạn nộp bài: ${assignment.deadline}', // Văn bản bổ sung
+                          'Hạn nộp bài: \n${DateFormat('HH:mm:ss dd/MM/yyyy').format(DateTime.parse(assignment.deadline!))}', // Văn bản bổ sung
                           style: TextStyle(color: Colors.grey),
                         ),
                       ],

@@ -104,7 +104,7 @@ class ClassProvider with ChangeNotifier {
             context, jsonDecode(response.body)['data'], Colors.red);
       }
     } catch (e) {
-      print(e.toString());
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     isLoading = false;
     notifyListeners();
@@ -131,11 +131,10 @@ class ClassProvider with ChangeNotifier {
         print("lay du lieu thanh cong");
         notifyListeners();
       } else {
-        _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
+        Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
-      print(e.toString());
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -166,10 +165,10 @@ class ClassProvider with ChangeNotifier {
         Navigator.pop(context);
         notifyListeners();
       } else {
-        _showErrorDialog(context, response.body.toString());
+        Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -196,7 +195,7 @@ class ClassProvider with ChangeNotifier {
             context, "Có lỗi xảy ra, không thể xóa lớp", Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -228,10 +227,10 @@ class ClassProvider with ChangeNotifier {
         _showSuccessSnackbar(
             context, "Không tồn tại lớp có mã này", Colors.red);
       } else {
-        _showErrorDialog(context, response.body.toString());
+        Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -267,10 +266,10 @@ class ClassProvider with ChangeNotifier {
         get_class_list(context);
         notifyListeners();
       } else {
-        _showErrorDialog(context, response.body.toString());
+        Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -331,11 +330,10 @@ class ClassProvider with ChangeNotifier {
         notifyListeners();
       } else {
         print(response.body);
-        _showSuccessSnackbar(
-            context, "Không lấy được dữ liệu lớp mo", Colors.red);
+        Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 }

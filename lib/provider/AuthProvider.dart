@@ -40,24 +40,6 @@ class AuthProvider with ChangeNotifier {
   String? get role => _role;
   String? get fcm_token => _fcm_token;
 
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Đóng'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   Future<void> login(
       BuildContext context, String email, String password) async {
@@ -165,7 +147,7 @@ class AuthProvider with ChangeNotifier {
         _showSuccessSnackbar(
             context, "Mật khẩu không nên chứa các kí tự đặc biệt", Colors.red);
       } else {
-        _showErrorDialog(context, response.body);
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
@@ -201,7 +183,7 @@ class AuthProvider with ChangeNotifier {
       } else {
         // Xử lý nếu đăng ký thất bại
         print("Đăng ký thất bại: ${response.body}");
-        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
@@ -233,7 +215,7 @@ class AuthProvider with ChangeNotifier {
       } else {
         // Xử lý nếu đăng ký thất bại
         print("Đăng ký thất bại: ${response.body}");
-        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
@@ -270,8 +252,13 @@ class AuthProvider with ChangeNotifier {
             context,
             "Mật khẩu mới liên quan đến mật khẩu cũ, vui lòng đặt lại",
             Colors.red);
-      } else {
-        _showErrorDialog(context, response.body.toString());
+      } else if (code == "1017") {
+        _showSuccessSnackbar(
+            context,
+            "Mật khẩu cũ sai, vui lòng thử lại",
+            Colors.red);
+      }else {
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
@@ -322,7 +309,7 @@ class AuthProvider with ChangeNotifier {
         _showSuccessSnackbar(
             context, "Email không đúng định dạng @hust.edu.vn", Colors.red);
       } else {
-        print(responseBody.body);
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print(e.toString());
@@ -350,7 +337,7 @@ class AuthProvider with ChangeNotifier {
         _showSuccessSnackbar(context, "Đăng xuất thành công", Colors.green);
         notifyListeners();
       } else {
-        _showErrorDialog(context, response.body.toString());
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);

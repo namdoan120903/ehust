@@ -42,11 +42,10 @@ class AbsenceProvider with ChangeNotifier {
         print(absences);
         notifyListeners();
       } else {
-        Constant.showSuccessSnackbar(context, responseBody, Colors.red);
+        Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-     // Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
-      print(e.toString());
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     isLoading = false;
     notifyListeners();
@@ -82,8 +81,7 @@ class AbsenceProvider with ChangeNotifier {
         Constant.showSuccessSnackbar(context, responseBody, Colors.red);
       }
     } catch (e) {
-      // Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
-      print(e.toString());
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     isLoading = false;
     notifyListeners();
@@ -118,7 +116,7 @@ class AbsenceProvider with ChangeNotifier {
       }
     } catch (e) {
       // Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
-      print(e.toString());
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     isLoading = false;
     notifyListeners();

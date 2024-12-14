@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../DocumentVIewer.dart';
@@ -41,6 +42,15 @@ class _StudentSubmissionState extends State<StudentSubmission> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
+                  'Chấm điểm bài tập',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+                SizedBox(height: 20,),
+                Text(
                   'Điểm : ${surveyProvider.selectSubmission?.grade == null ?"Chưa được chấm điểm":surveyProvider.selectSubmission!.grade}',
                   style: TextStyle(
                     fontSize: 22,
@@ -51,12 +61,12 @@ class _StudentSubmissionState extends State<StudentSubmission> {
                 Text(
                   'Mô tả: ${surveyProvider.selectSubmission?.textResponse}',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold
                   ),
                 ),
                 Text(
-                  '${surveyProvider.selectSubmission?.submissionTime}',
+                  'Thời gian nộp: ${DateFormat('HH:mm:ss dd/MM/yyyy').format(DateTime.parse(surveyProvider.selectSubmission!.submissionTime!))}',
                   style: TextStyle(
                       fontSize: 20
                   ),

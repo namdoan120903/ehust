@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/model/Class.dart';
 import 'package:project/provider/ClassProvider.dart';
 import 'package:project/screens/myAppBar.dart';
@@ -32,8 +33,8 @@ class _ClassInfoState extends State<ClassInfo> {
               Text("Loại lớp: ${classModel?.classType}"),
               Text("Giảng viên: ${classModel?.lecturerName}"),
               Text("Số sinh viên: ${classModel?.studentCount}"),
-              Text("Ngày bắt đầu: ${classModel?.startDate}"),
-              Text("Ngày kết thúc: ${classModel?.endDate}"),
+              Text("Ngày bắt đầu: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(classModel!.startDate!))}"),
+              Text("Ngày kết thúc: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(classModel!.endDate!))}"),
               Text("Trạng thái: ${classModel?.status}"),
               SizedBox(height: 16),
               Divider(),

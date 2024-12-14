@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/provider/AbsenceProvider.dart';
 import 'package:project/screens/student/student_absence_create.dart';
 import 'package:provider/provider.dart';
@@ -41,12 +42,8 @@ class _StudentAbsenceState extends State<StudentAbsence> {
                     '${widget.classA.classId} - ${widget.classA.className} - ${widget.classA.classType} ',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.red),
                   ),
-                  Text(
-                    'Bắt đầu: ${widget.classA.startDate}',
-                  ),
-                  Text(
-                    'Kết thúc: ${widget.classA.endDate}',
-                  ),
+                  Text("Ngày bắt đầu: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.classA.startDate!))}"),
+                  Text("Ngày kết thúc: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.classA.endDate!))}"),
                 ],
               ),
             ),

@@ -60,8 +60,7 @@ class SurveyProvider with ChangeNotifier {
         print(responseBody.body);
       }
     } catch (e) {
-      print(e.toString());
-      _showErrorDialog(context, e.toString());
+      Constant.showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     isLoading = false;
     notifyListeners();

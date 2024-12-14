@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/Constant.dart';
 import 'package:project/model/Survey.dart';
 import 'package:project/provider/NotificationProvider.dart';
@@ -58,7 +59,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
                 ),
               ),
               Text(
-                '${widget.survey!.deadline}',
+                '${DateFormat('HH:mm:ss dd/MM/yyyy').format(DateTime.parse(widget.survey!.deadline!))}',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -66,7 +67,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
                 ),
               ),
               Text(
-                '${widget.survey!.description}',
+                '${widget.survey!.description} ',
                 style: TextStyle(fontSize: 20),
               ),
               // Link Google Drive ở đây
@@ -113,7 +114,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Email: ${submission.studentAccount!.email}'),
-                            Text('Thời gian nộp: ${submission.submissionTime}'),
+                            Text('Thời gian nộp: ${DateFormat('HH:mm:ss dd/MM/yyyy').format(DateTime.parse(submission.submissionTime!))}'),
                             Text('Grade: ${submission.grade ?? 'Chưa có'}'),
                             Text('Nội dung: ${submission.textResponse}'),
                             TextButton(
@@ -200,7 +201,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Email: ${submission.studentAccount!.email}'),
-                            Text('Thời gian nộp: ${submission.submissionTime}'),
+                            Text('Thời gian nộp: ${DateFormat('HH:mm:ss dd/MM/yyyy').format(DateTime.parse(submission.submissionTime!))}'),
                             Text('Grade: ${submission.grade ?? 'Chưa có'}'),
                             Text('Nội dung: ${submission.textResponse}'),
                           ],

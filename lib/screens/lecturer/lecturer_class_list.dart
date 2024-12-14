@@ -17,9 +17,19 @@ class LecturerClassList extends StatefulWidget {
 }
 
 class _LecturerClassListState extends State<LecturerClassList> {
-  int _currentPage = 0;
 
-  final int _classesPerPage = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    // Lấy instance của ClassProvider mà không lắng nghe các thay đổi
+    final classProvider = Provider.of<ClassProvider>(context, listen: false);
+    classProvider.get_class_list(context);
+    print(classProvider.classes.toString());
+  }
+
+  int _currentPage = 0;
+  final int _classesPerPage = 4;
   @override
   Widget build(BuildContext context) {
     final classProvider = Provider.of<ClassProvider>(context);
@@ -58,7 +68,7 @@ class _LecturerClassListState extends State<LecturerClassList> {
                         '${classItem.classId} - ${classItem.className}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text('${classItem.classType}\n${classItem.status}, ${classItem.lecturerName}'),
+                      subtitle: Text('Loại lớp: ${classItem.classType}\nTrạng thái: ${classItem.status}\nGiảng viên: ${classItem.lecturerName}'),
                       trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
                       onTap: () {
                         print(widget.route);

@@ -16,9 +16,12 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
   String selectedClassType = 'ACTIVE'; // Giá trị mặc định
   List<String> items = ['ACTIVE', 'COMPLETED', 'UPCOMING'];
   TextEditingController startDateController = TextEditingController();
- TextEditingController endDateController =TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+  TextEditingController classIdController = TextEditingController();
+  TextEditingController classNameController = TextEditingController();
 
-  void _showDeleteDialog(BuildContext context,ClassProvider classProvider, String classId, int index) {
+  void _showDeleteDialog(BuildContext context, ClassProvider classProvider,
+      String classId, int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -48,23 +51,16 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
-     int? selectedClassId =
-        ModalRoute.of(context)!.settings.arguments as int?;
+    int? selectedClassId = ModalRoute.of(context)!.settings.arguments as int?;
     final classProvider = Provider.of<ClassProvider>(context);
-    selectedClassId = selectedClassId! > classProvider.classes.length-1?classProvider.classes.length-1:selectedClassId;
+    selectedClassId = selectedClassId! > classProvider.classes.length - 1
+        ? classProvider.classes.length - 1
+        : selectedClassId;
     Class classEdit = classProvider.classes[selectedClassId!];
-
-    final TextEditingController classIdController =
-        TextEditingController(text: classEdit.classId);
-    final TextEditingController classNameController =
-        TextEditingController(text: classEdit.className);
-     startDateController =
-     TextEditingController(text: classEdit.startDate);
-      endDateController =
-     TextEditingController(text: classEdit.endDate);
-
+    classIdController = TextEditingController(text:classEdit.classId );
     return Scaffold(
         appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
         body: Padding(
@@ -116,16 +112,15 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                                 classIdController.text,
                                 classNameController.text,
                                 selectedClassType,
-                                startDate == null
+                                startDateController.text == ""
                                     ? classEdit.startDate!
-                                    : startDate.toString().substring(0, 10),
-                                endDate == null
+                                    : startDateController.text,
+                                endDateController.text == ""
                                     ? classEdit.endDate!
-                                    : endDate.toString().substring(0, 10));
+                                    : endDateController.text);
                           },
                           style: ElevatedButton.styleFrom(
                             textStyle: TextStyle(fontSize: 15),
-
                           ),
                           child: Text('Chỉnh sửa lớp học'),
                         ),
@@ -137,15 +132,15 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                         flex: 2,
                         child: ElevatedButton(
                           onPressed: () {
-                              _showDeleteDialog(context,classProvider, classIdController.text, selectedClassId!);
-                              setState(() {
-                                selectedClassId = 0;
-                              });
+                            _showDeleteDialog(context, classProvider,
+                                classIdController.text, selectedClassId!);
+                            setState(() {
+                              selectedClassId = 0;
+                            });
                           },
                           style: ElevatedButton.styleFrom(
-                            textStyle: TextStyle(fontSize: 15),
-                            backgroundColor: Colors.red
-                          ),
+                              textStyle: TextStyle(fontSize: 15),
+                              backgroundColor: Colors.red),
                           child: Text('Xoa lớp học'),
                         ),
                       )
@@ -172,7 +167,8 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     );
   }
 
-  Widget _buildDropdown(String selectedValue, List<String> items, ValueChanged<String?> onChanged, String label) {
+  Widget _buildDropdown(String selectedValue, List<String> items,
+      ValueChanged<String?> onChanged, String label) {
     return DropdownButtonFormField<String>(
       value: selectedValue,
       items: items.map((String item) {
@@ -193,39 +189,42 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
   }
 
   Widget _buildDatePicker(
-      BuildContext context, String label, bool isStartDate, ) {
+    BuildContext context,
+    String label,
+    bool isStartDate,
+  ) {
     return TextField(
-      readOnly: true,
-      decoration: InputDecoration(
-        labelText: label,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: label,
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+          ),
+          border: OutlineInputBorder(),
+          suffixIcon: Icon(Icons.calendar_today, color: Colors.red),
         ),
-        border: OutlineInputBorder(),
-        suffixIcon: Icon(Icons.calendar_today, color: Colors.red),
-      ),
-      onTap: () async {
-        DateTime? selectedDate = await showDatePicker(
-          context: context,
-          initialDate:
-              isStartDate ? DateTime.now() : (endDate ?? DateTime.now()),
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2101),
-        );
-        if (selectedDate != null) {
-          setState(() {
-            if (isStartDate) {
-              startDateController.text = selectedDate.toLocal().toString().split(' ')[0];
-            } else {
-              endDateController.text = selectedDate.toLocal().toString().split(' ')[0];
-            }
-          });
-        }
-      },
-      controller: TextEditingController(
-          text: isStartDate
-              ? startDateController.text
-              : endDateController.text,
-    ));
-
-}}
+        onTap: () async {
+          DateTime? selectedDate = await showDatePicker(
+            context: context,
+            initialDate:
+                isStartDate ? DateTime.now() : (endDate ?? DateTime.now()),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2101),
+          );
+          if (selectedDate != null) {
+            setState(() {
+              if (isStartDate) {
+                startDateController.text =
+                    selectedDate.toLocal().toString().split(' ')[0];
+              } else {
+                endDateController.text =
+                    selectedDate.toLocal().toString().split(' ')[0];
+              }
+            });
+          }
+        },
+        controller: TextEditingController(
+          text: isStartDate ? startDateController.text : endDateController.text,
+        ));
+  }
+}
