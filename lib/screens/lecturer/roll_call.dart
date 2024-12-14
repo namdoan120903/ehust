@@ -244,10 +244,17 @@ class _RollCallScreenState extends State<RollCallScreen> {
                               classId, currentDate, absentStudentIds);
                           _showSuccessSnackbar(
                               context, "Điểm danh thành công", Colors.green);
+
+                          List<String> absentStudentNoticeIds = students
+                              .where((student) =>
+                                  student.attendanceStatus ==
+                                  'ABSENCE') // Filter ABSENCE
+                              .map((student) => student.accountId.toString())
+                              .toList();
                           final notificationProvider =
                               Provider.of<NotificationProvider>(context,
                                   listen: false);
-                          for (String id in absentStudentIds) {
+                          for (String id in absentStudentNoticeIds) {
                             notificationProvider.sendNotification(
                                 message: "Thông báo vắng mặt",
                                 toUser: id,

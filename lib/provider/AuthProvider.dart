@@ -90,6 +90,9 @@ class AuthProvider with ChangeNotifier {
         if (url != "")
           fileId = url.substring(url.indexOf('d/') + 2, url.indexOf('/view'));
         print(_user);
+        // Notify NotificationProvider to fetch unread count
+        final notificationProvider = context.read<NotificationProvider>();
+        await notificationProvider.getUnreadNotificationCount();
         if (_user.role == "STUDENT") {
           Navigator.pushNamed(context, '/student');
         }
@@ -97,7 +100,6 @@ class AuthProvider with ChangeNotifier {
           Navigator.pushNamed(context, '/lecturer');
         }
         _showSuccessSnackbar(context, "Đăng nhâp thành công", Colors.green);
-        NotificationProvider notificationProvider = NotificationProvider();
       } else if (response.statusCode == 403) {
         _locked = true;
         if (_verify_code == "") await getVerifyCode(context, email, password);
@@ -113,14 +115,16 @@ class AuthProvider with ChangeNotifier {
       } else if (code == "1017") {
         _showSuccessSnackbar(
             context, "Mật khẩu sai, vui lòng thử lại", Colors.red);
-      }else if (code == "1002") {
+      } else if (code == "1002") {
         _showSuccessSnackbar(
             context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
       } else {
-        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+        _showSuccessSnackbar(
+            context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
 
     _isLoading = false;
@@ -169,7 +173,8 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -205,7 +210,8 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -237,7 +243,8 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Lỗi khi gửi request: $e");
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -274,7 +281,8 @@ class AuthProvider with ChangeNotifier {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 
@@ -326,7 +334,8 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print(e.toString());
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
     _isLoading = false;
     notifyListeners();
@@ -353,7 +362,8 @@ class AuthProvider with ChangeNotifier {
         _showErrorDialog(context, response.body.toString());
       }
     } catch (e) {
-      _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
+      _showSuccessSnackbar(
+          context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
     }
   }
 

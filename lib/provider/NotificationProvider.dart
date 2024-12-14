@@ -85,7 +85,7 @@ class NotificationProvider with ChangeNotifier {
   // Fetch unread notification count
   Future<void> getUnreadNotificationCount() async {
     token = await secureStorage.read(key: 'token');
-    unreadCount = 0;
+    //unreadCount = 0;
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_unread_notification_count'),
