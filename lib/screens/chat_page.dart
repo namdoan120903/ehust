@@ -143,6 +143,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   IconButton(
                     onPressed: () {
+                      if(_messageController.text != ""){
                       chatProvider.sendMessage(context, widget.partner.id.toString(), _messageController.text, widget.id.toString());
                       _messageController.text = "";
                       FocusScope.of(context).unfocus();
@@ -152,7 +153,7 @@ class _ChatPageState extends State<ChatPage> {
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOut,
                         );
-                      });
+                      });}
                     },
                     icon: const Icon(Icons.send, color: Colors.blueAccent),
                   ),

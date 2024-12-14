@@ -59,7 +59,7 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     final TextEditingController classIdController =
         TextEditingController(text: classEdit.classId);
     final TextEditingController classNameController =
-        TextEditingController(text: classEdit.startDate);
+        TextEditingController(text: classEdit.className);
      startDateController =
      TextEditingController(text: classEdit.startDate);
       endDateController =

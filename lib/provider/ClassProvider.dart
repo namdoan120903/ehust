@@ -89,7 +89,8 @@ class ClassProvider with ChangeNotifier {
       );
       print(response.body);
       if (response.statusCode == 200) {
-        Class newClass = Class.fromJson(json.decode(response.body)['data']);
+        final responseBody = utf8.decode(response.bodyBytes);
+        Class newClass = Class.fromJson(json.decode(responseBody)['data']);
         print(newClass);
         classes.add(newClass);
         _showSuccessSnackbar(

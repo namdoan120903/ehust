@@ -41,7 +41,7 @@ class _StudentSubmissionState extends State<StudentSubmission> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Điểm : ${surveyProvider.selectSubmission?.grade == null ?0:surveyProvider.selectSubmission!.grade}',
+                  'Điểm : ${surveyProvider.selectSubmission?.grade == null ?"Chưa được chấm điểm":surveyProvider.selectSubmission!.grade}',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -49,11 +49,10 @@ class _StudentSubmissionState extends State<StudentSubmission> {
                   ),
                 ),
                 Text(
-                  '${surveyProvider.selectSubmission?.textResponse}',
+                  'Mô tả: ${surveyProvider.selectSubmission?.textResponse}',
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
                 Text(
@@ -62,7 +61,6 @@ class _StudentSubmissionState extends State<StudentSubmission> {
                       fontSize: 20
                   ),
                 ),
-                // Link Google Drive ở đây
                 TextButton(
                   onPressed: () {
                     Navigator.push(

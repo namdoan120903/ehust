@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/Constant.dart';
 import 'package:project/model/Survey.dart';
+import 'package:project/provider/NotificationProvider.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +37,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     final surveyProvider = Provider.of<SurveyProvider>(context);
-
+    final notificationProvider = Provider.of<NotificationProvider>(context);
     // Lọc danh sách "Chưa chấm" và "Đã chấm" chỉ một lần
     final notGradedSubmissions = surveyProvider.submissions.where((submission) => submission.grade == null).toList();
     final gradedSubmissions = surveyProvider.submissions.where((submission) => submission.grade != null).toList();
@@ -163,6 +164,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
                                               Constant.showSuccessSnackbar(context, "Điểm từ 0 đến 10", Colors.red);
                                             } else {
                                               surveyProvider.grade_survey(context, widget.survey!.id.toString(), gradeController.text, submission.id.toString());
+                                              notificationProvider.sendNotification(message: "Bạn đã được chấm điểm ${grade} cho bài kiểm tra ${widget.survey?.title}", toUser: submission.studentAccount!.accountId.toString(), type: "ASSIGNMENT_GRADE");
                                             }
                                           },
                                           child: Text('Chấm điểm'),
@@ -184,7 +186,7 @@ class _SurveyClassListState extends State<SurveyClassList> with SingleTickerProv
 
                 // Tab "Đã chấm"
                 gradedSubmissions.isEmpty
-                    ? Center(child: Text('Không có submission nào đã chấm'))
+                    ? Center(child: Text('Không có bài tập nào đã chấm'))
                     : ListView.builder(
                   itemCount: gradedSubmissions.length,
                   itemBuilder: (context, index) {

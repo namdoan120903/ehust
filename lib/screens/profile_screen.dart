@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightGreenAccent,
+                        backgroundColor: Colors.red,
                         padding:
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       ),
@@ -185,14 +185,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightGreenAccent,
+                        backgroundColor: Colors.red,
                         padding:
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        chatProvider.disconnect();
+                        if(chatProvider.isConnected){
+                        chatProvider.disconnect();}
                         authProvider.logout(context);
                         Navigator.pushNamed(context, '/signin');
                       },

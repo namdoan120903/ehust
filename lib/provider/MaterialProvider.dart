@@ -59,7 +59,8 @@ class MaterialProvider with ChangeNotifier {
       var responseBody = await http.Response.fromStream(response);
       print(responseBody.body);
       if (response.statusCode == 201) {
-        MyMaterial material1 = MyMaterial.fromJson(jsonDecode(responseBody.body)['data']);
+        final responseBody1 = utf8.decode(responseBody.bodyBytes);
+        MyMaterial material1 = MyMaterial.fromJson(jsonDecode(responseBody1)['data']);
         materials.add(material1);
         _showSuccessSnackbar(context, "Thêm tài liệu mới thành công", Colors.green);
         notifyListeners();
@@ -164,7 +165,8 @@ class MaterialProvider with ChangeNotifier {
       var response = await request.send();
       var responseBody = await http.Response.fromStream(response);
       if (response.statusCode == 200) {
-        MyMaterial material1 = MyMaterial.fromJson(jsonDecode(responseBody.body)['data']);
+        final responseBody1 = utf8.decode(responseBody.bodyBytes);
+        MyMaterial material1 = MyMaterial.fromJson(jsonDecode(responseBody1)['data']);
         materials[index] = material1;
         print(material1.materialName);
         _showSuccessSnackbar(context, "Chỉnh sửa tài liệu thành công", Colors.green);

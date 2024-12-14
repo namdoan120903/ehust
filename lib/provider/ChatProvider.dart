@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:project/model/Conversation.dart';
+import 'package:project/model/StudentAccount.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:http/http.dart' as http;
 import '../Constant.dart';
@@ -14,6 +15,7 @@ class ChatProvider with ChangeNotifier {
   bool isConnected = false;
   List<Conversation> conversations = [];
   List<LastMessage> messages = [];
+  List<StudentAccount> searchStudent = [];
 
   // Hàm khởi tạo WebSocket kết nối
   void connect(String userId) async {
@@ -66,8 +68,11 @@ class ChatProvider with ChangeNotifier {
     } else {
       print('WebSocket is not connected!');
     }
-
-    await get_conversation(context, conversationId);
+    if(!conversationId.isEmpty){
+      await get_conversation_list(context);
+      await get_conversation(context, conversationId);
+      notifyListeners();
+    }
     notifyListeners();
   }
 
@@ -161,6 +166,33 @@ class ChatProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         await get_conversation(context, con_id);
+        notifyListeners();
+      } else {
+        Constant.showSuccessSnackbar(context, response.body, Colors.red);
+      }
+    } catch (e) {
+      Constant.showSuccessSnackbar(context, e.toString(), Colors.red);
+      print(e.toString());
+    }
+  }
+
+  Future<void> search_student(BuildContext context, String name) async {
+    final Map<String, dynamic> requestBody = {
+      "search": name,
+    };
+    try {
+      final response = await http.post(
+        Uri.parse('${Constant.baseUrl}/it5023e/search_account'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(requestBody),
+      );
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonData = json.decode(responseBody)['data'];
+        searchStudent = (jsonData['page_content'] as List)
+            .map((classJson) => StudentAccount.fromJson(classJson))
+            .toList();
+        print(searchStudent);
         notifyListeners();
       } else {
         Constant.showSuccessSnackbar(context, response.body, Colors.red);

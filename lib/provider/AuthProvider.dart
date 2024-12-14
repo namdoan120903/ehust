@@ -113,8 +113,11 @@ class AuthProvider with ChangeNotifier {
       } else if (code == "1017") {
         _showSuccessSnackbar(
             context, "Mật khẩu sai, vui lòng thử lại", Colors.red);
+      }else if (code == "1002") {
+        _showSuccessSnackbar(
+            context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
       } else {
-        _showErrorDialog(context, response.body.toString());
+        _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       _showSuccessSnackbar(context, "Có lỗi xảy ra, vui lòng thử lại", Colors.red);

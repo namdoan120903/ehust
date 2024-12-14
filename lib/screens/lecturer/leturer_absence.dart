@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/provider/NotificationProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../../DocumentVIewer.dart';
@@ -26,6 +27,7 @@ class _LecturerAbsenceState extends State<LecturerAbsence> {
   @override
   Widget build(BuildContext context) {
     final absenceProvider = Provider.of<AbsenceProvider>(context);
+    final notificationProvider = Provider.of<NotificationProvider>(context);
     return Scaffold(
       appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
       body:
@@ -138,6 +140,12 @@ class _LecturerAbsenceState extends State<LecturerAbsence> {
                                     ElevatedButton(
                                       onPressed: () {
                                         absenceProvider.reviewAbsence(context, absence.id.toString(), selectedStatus, widget.classA.classId!);
+                                        if(selectedStatus == "ACCEPTED" ){
+                                          notificationProvider.sendNotification(message: "Đơn nghỉ học được chấp nhận: ${absence.title} - ${absence.absenceDate}", toUser: absence.studentAccount!.accountId!, type: "ACCEPT_ABSENCE_REQUEST");
+                                        }
+                                        if(selectedStatus == "REJECTED" ){
+                                          notificationProvider.sendNotification(message: "Đơn nghỉ học bị từ chối: ${absence.title} - ${absence.absenceDate}", toUser: absence.studentAccount!.accountId!, type: "REJECT_ABSENCE_REQUEST");
+                                        }
                                       },
                                       child: Text('Cập nhật'),
                                     ),
